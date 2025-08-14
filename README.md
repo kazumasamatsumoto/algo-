@@ -1,59 +1,38 @@
-# Algo
+アルゴリズムの世界はソートだけではありません！実際、アルゴリズムには様々な分野があり、それぞれが異なる問題を解決するための手法を提供しています。
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.0.5.
+## アルゴリズムの主要分野
 
-## Development server
+### **1. 探索アルゴリズム**
+- **線形探索**: 配列を先頭から順番に調べる
+- **二分探索**: ソート済み配列で効率的に要素を見つける
+- **深さ優先探索（DFS）**: グラフやツリーを深く探索
+- **幅優先探索（BFS）**: グラフやツリーを幅広く探索
 
-To start a local development server, run:
+### **2. グラフアルゴリズム**
+- **最短経路**: ダイクストラ法、フロイド・ワーシャル法
+- **最小全域木**: クラスカル法、プリム法
+- **トポロジカルソート**: 依存関係のある作業の順序決定
 
-```bash
-ng serve
-```
+### **3. 動的プログラミング**
+- **フィボナッチ数列**: メモ化による効率化
+- **ナップサック問題**: 限られた容量での最適化
+- **最長共通部分列**: 文字列の類似性計算
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### **4. 分割統治法**
+- **マージソート**: 分割して統治するソート
+- **クイックソート**: ピボットを使った分割
+- **二分探索**: 範囲を半分に分割
 
-## Code scaffolding
+### **5. 貪欲法（Greedy）**
+- **ハフマン符号**: データ圧縮
+- **硬貨問題**: 最少枚数での支払い
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 原理原則
 
-```bash
-ng generate component component-name
-```
+アルゴリズムの根本的な考え方：
+1. **問題の分解**: 大きな問題を小さな問題に分ける
+2. **計算量の分析**: 時間計算量（O記法）とメモリ使用量
+3. **最適化の戦略**: より効率的な解法の探求
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+原理原則は押さえておきたいので、時間計算量と空間計算量は表示しておいてほしいです。
+アルゴリズムを使って仕事をするわけではないのですが、趣味として人生を豊かにするためにアルゴリズムを可視化し、探求できるようにしたいです。

@@ -1,0 +1,103 @@
+.graph-visualization {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.graph-svg {
+  background: #f8f9ff;
+  border-radius: 8px;
+  border: 2px solid #e0e8ff;
+}
+
+.edge-line {
+  stroke: #a0aec0;
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+
+.edge-line.path {
+  stroke: #48bb78;
+  stroke-width: 4;
+  stroke-dasharray: 5,5;
+  animation: dash 1s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
+.edge-weight {
+  fill: #4a5568;
+  font-size: 12px;
+  font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  background: white;
+  padding: 2px 4px;
+}
+
+.node-circle {
+  fill: #667eea;
+  stroke: #553c9a;
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+
+.node-circle.start {
+  fill: #48bb78;
+  stroke: #38a169;
+}
+
+.node-circle.end {
+  fill: #e53e3e;
+  stroke: #c53030;
+}
+
+.node-circle.current {
+  fill: #ed8936;
+  stroke: #dd6b20;
+  r: 30;
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+.node-circle.visited {
+  fill: #9f7aea;
+  stroke: #805ad5;
+}
+
+.node-circle.path {
+  fill: #48bb78;
+  stroke: #38a169;
+  stroke-width: 4;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+.node-id {
+  fill: white;
+  font-size: 14px;
+  font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+.node-distance {
+  fill: white;
+  font-size: 10px;
+  font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}

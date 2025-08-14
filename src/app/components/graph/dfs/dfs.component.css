@@ -1,0 +1,96 @@
+.graph-visualization {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+.visit-order {
+  background: #f7fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+  border: 2px solid #e2e8f0;
+}
+
+.visit-order h4 {
+  margin: 0 0 0.5rem 0;
+  color: #2d3748;
+}
+
+.stack-info {
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.graph-svg {
+  background: #f8f9ff;
+  border-radius: 8px;
+  border: 2px solid #e0e8ff;
+}
+
+.edge-line {
+  stroke: #a0aec0;
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+
+.edge-line.visited-edge {
+  stroke: #48bb78;
+  stroke-width: 3;
+}
+
+.node-circle {
+  fill: #cbd5e0;
+  stroke: #a0aec0;
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+
+.node-circle.start {
+  fill: #48bb78;
+  stroke: #38a169;
+  stroke-width: 3;
+}
+
+.node-circle.current {
+  fill: #ed8936;
+  stroke: #dd6b20;
+  stroke-width: 3;
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+.node-circle.visited {
+  fill: #667eea;
+  stroke: #553c9a;
+  stroke-width: 2;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+.node-id {
+  fill: white;
+  font-size: 14px;
+  font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+.visit-number {
+  fill: #ffd700;
+  font-size: 10px;
+  font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}

@@ -1,0 +1,157 @@
+.fibonacci-visualization {
+  width: 100%;
+  padding: 1rem;
+}
+
+.info-panel {
+  background: #f7fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 2px solid #e2e8f0;
+}
+
+.sequence-display h4 {
+  margin: 0 0 0.5rem 0;
+  color: #2d3748;
+}
+
+.sequence {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: bold;
+  color: #4a5568;
+  background: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border: 1px solid #e2e8f0;
+}
+
+.memo-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.current-calc {
+  color: #ed8936;
+  font-weight: bold;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+  margin-bottom: 1rem;
+  max-width: 800px;
+}
+
+.fib-cell {
+  background: #e2e8f0;
+  border: 2px solid #cbd5e0;
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+  transition: all 0.3s ease;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.fib-cell.current {
+  background: #ed8936;
+  border-color: #dd6b20;
+  color: white;
+  transform: scale(1.05);
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+.fib-cell.calculating {
+  background: #9f7aea;
+  border-color: #805ad5;
+  color: white;
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+.fib-cell.memoized {
+  background: #48bb78;
+  border-color: #38a169;
+  color: white;
+  animation: flash 0.5s ease-in-out;
+}
+
+.fib-cell.computed {
+  background: #667eea;
+  border-color: #553c9a;
+  color: white;
+}
+
+@keyframes pulse {
+  from { transform: scale(1.05); }
+  to { transform: scale(1.1); }
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 5px rgba(159, 122, 234, 0.5); }
+  to { box-shadow: 0 0 20px rgba(159, 122, 234, 0.8); }
+}
+
+@keyframes flash {
+  0% { background: #48bb78; }
+  50% { background: #38a169; }
+  100% { background: #48bb78; }
+}
+
+.cell-index {
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.cell-value {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 14px;
+  color: #4a5568;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e0;
+}
+
+.legend-color.current {
+  background: #ed8936;
+}
+
+.legend-color.calculating {
+  background: #9f7aea;
+}
+
+.legend-color.memoized {
+  background: #48bb78;
+}
+
+.legend-color.computed {
+  background: #667eea;
+}

@@ -1,0 +1,15 @@
+<div class="array-visualization">
+  <div class="array-container">
+    @for (value of data; track $index) {
+      <div 
+        class="array-bar" 
+        [style.height.px]="value * 3"
+        [class.highlight]="highlightedIndices.includes($index)"
+        [class.comparing]="comparingIndices.includes($index)"
+        [class.current]="currentIndex === $index"
+        [class.sorted]="sortedIndices.includes($index)">
+        <span class="bar-value">{{ value }}</span>
+      </div>
+    }
+  </div>
+</div>

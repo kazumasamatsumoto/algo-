@@ -1,0 +1,173 @@
+<div class="algorithm-explorer">
+  <header class="app-header">
+    <h1>🔍 Algorithm Explorer</h1>
+    <p>Angularで学ぶアルゴリズム可視化</p>
+  </header>
+
+  <div class="main-layout">
+    <!-- サイドバー: アルゴリズム選択 -->
+    <aside class="sidebar">
+      <div class="settings-panel">
+        <h3>設定</h3>
+        
+        <div class="setting-group">
+          <label>配列サイズ: {{ settings.arraySize }}</label>
+          <input 
+            type="range" 
+            min="5" 
+            max="50" 
+            [value]="settings.arraySize"
+            (input)="updateArraySize(+($any($event.target)).value)"
+            class="slider">
+        </div>
+
+        <div class="setting-group">
+          <label>実行速度: {{ settings.speed }}ms</label>
+          <input 
+            type="range" 
+            min="50" 
+            max="1000" 
+            step="50"
+            [value]="settings.speed"
+            (input)="updateSpeed(+($any($event.target)).value)"
+            class="slider">
+        </div>
+
+        <div class="setting-group">
+          <label>データタイプ:</label>
+          <select 
+            [value]="settings.dataType"
+            (change)="updateDataType(($any($event.target)).value)"
+            class="select">
+            <option value="random">ランダム</option>
+            <option value="sorted">ソート済み</option>
+            <option value="reverse">逆順</option>
+            <option value="nearly-sorted">ほぼソート済み</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- アルゴリズム選択 -->
+      @for (algorithms of [sortingAlgorithms, searchAlgorithms, graphAlgorithms, dynamicProgramming]; track algorithms) {
+        <div class="algorithm-category">
+          <h3>{{ getCategoryName(algorithms) }}</h3>
+          <div class="algorithm-grid">
+            @for (algorithm of algorithms; track algorithm) {
+              <button
+                class="algorithm-btn"
+                [class.selected]="selectedAlgorithm === algorithm"
+                [disabled]="isRunning"
+                (click)="selectAlgorithm(algorithm)">
+                <div class="algorithm-name">
+                  {{ getAlgorithmInfo(algorithm)?.name || algorithm }}
+                </div>
+                <div class="algorithm-complexity">
+                  {{ getAlgorithmInfo(algorithm)?.timeComplexity || 'N/A' }}
+                </div>
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </aside>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+      @if (selectedAlgorithm) {
+        <div class="algorithm-header">
+          <div class="algorithm-title">
+            <h2>{{ getAlgorithmInfo(selectedAlgorithm)?.name || selectedAlgorithm }}</h2>
+            <div class="algorithm-details">
+              <div class="complexity-info">
+                <span class="complexity-label">時間計算量:</span>
+                <span class="complexity-value">{{ getAlgorithmInfo(selectedAlgorithm)?.timeComplexity || 'N/A' }}</span>
+              </div>
+              <div class="complexity-info">
+                <span class="complexity-label">空間計算量:</span>
+                <span class="complexity-value">{{ getAlgorithmInfo(selectedAlgorithm)?.spaceComplexity || 'N/A' }}</span>
+              </div>
+            </div>
+            <p class="algorithm-description">
+              {{ getAlgorithmInfo(selectedAlgorithm)?.description || 'アルゴリズムの説明が見つかりません。' }}
+            </p>
+          </div>
+          
+          <div class="controls">
+            <button 
+              class="control-btn run-btn"
+              [disabled]="isRunning"
+              (click)="runAlgorithm()">
+              ▶️ 実行
+            </button>
+            <button 
+              class="control-btn stop-btn"
+              [disabled]="!isRunning"
+              (click)="stopAlgorithm()">
+              ⏹️ 停止
+            </button>
+            <button 
+              class="control-btn reset-btn"
+              [disabled]="isRunning"
+              (click)="resetAlgorithm()">
+              🔄 リセット
+            </button>
+          </div>
+        </div>
+
+        <!-- 統計情報 -->
+        <div class="stats-panel">
+          <div class="stat-item">
+            <span class="stat-label">ステップ数:</span>
+            <span class="stat-value">{{ stats.steps }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">比較回数:</span>
+            <span class="stat-value">{{ stats.comparisons }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">交換回数:</span>
+            <span class="stat-value">{{ stats.swaps }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">実行時間:</span>
+            <span class="stat-value">{{ formatTime(stats.timeMs) }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">状態:</span>
+            <span class="stat-value" [class.running]="isRunning">
+              {{ isRunning ? '実行中...' : '停止中' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- アルゴリズム可視化エリア -->
+        <div class="visualization-container">
+          <ng-container #algorithmContainer></ng-container>
+        </div>
+      } @else {
+        <div class="welcome-message">
+          <h2>🎯 アルゴリズムを選択してください</h2>
+          <p>左のサイドバーからアルゴリズムを選択して、可視化を開始しましょう。</p>
+          <div class="feature-list">
+            <div class="feature-item">
+              <span class="feature-icon">📊</span>
+              <span>リアルタイム可視化</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">⚡</span>
+              <span>カスタマイズ可能な設定</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">📈</span>
+              <span>詳細な統計情報</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">🎮</span>
+              <span>インタラクティブな操作</span>
+            </div>
+          </div>
+        </div>
+      }
+    </main>
+  </div>
+</div>

@@ -1,0 +1,66 @@
+<div class="search-visualization">
+  <div class="search-info">
+    <div class="target-info">
+      <strong>探索ターゲット: {{ target }}</strong>
+    </div>
+    <div class="range-info">{{ getRangeText() }}</div>
+    <div class="result-message" 
+         [class.found]="foundIndex !== -1 && searchComplete"
+         [class.not-found]="foundIndex === -1 && searchComplete">
+      {{ getResultMessage() }}
+    </div>
+  </div>
+
+  <div class="array-container">
+    @for (value of data; track $index) {
+      <div 
+        class="array-item" 
+        [class.left-bound]="$index === left && !searchComplete"
+        [class.right-bound]="$index === right && !searchComplete"
+        [class.mid]="$index === mid"
+        [class.found]="foundIndex === $index"
+        [class.excluded]="excludedIndices.has($index)"
+        [class.in-range]="$index >= left && $index <= right && !searchComplete"
+        [class.target-match]="value === target">
+        <div class="item-index">{{ $index }}</div>
+        <div class="item-value">{{ value }}</div>
+        @if ($index === left && !searchComplete) {
+          <div class="bound-label">L</div>
+        }
+        @if ($index === right && !searchComplete) {
+          <div class="bound-label">R</div>
+        }
+        @if ($index === mid) {
+          <div class="bound-label">M</div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color in-range"></div>
+      <span>検索範囲</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color mid"></div>
+      <span>中点 (Mid)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color excluded"></div>
+      <span>除外済み</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color found"></div>
+      <span>発見！</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color left-bound"></div>
+      <span>左端 (L)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color right-bound"></div>
+      <span>右端 (R)</span>
+    </div>
+  </div>
+</div>

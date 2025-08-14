@@ -1,0 +1,47 @@
+<div class="fibonacci-visualization">
+  <div class="info-panel">
+    <div class="sequence-display">
+      <h4>フィボナッチ数列 (F({{ n }}))</h4>
+      <div class="sequence">{{ getFibonacciSequence() }}</div>
+    </div>
+    <div class="memo-info">
+      <strong>メモ化済み: {{ getMemoizedCount() }} / {{ n + 1 }}</strong>
+      <div class="current-calc">現在計算中: [{{ calculatingIndices.join(', ') }}]</div>
+    </div>
+  </div>
+
+  <div class="grid-container">
+    @for (value of fibValues; track $index) {
+      <div 
+        class="fib-cell"
+        [class.current]="currentIndex === $index"
+        [class.calculating]="calculatingIndices.includes($index)"
+        [class.memoized]="memoized.has($index)"
+        [class.computed]="value !== -1">
+        <div class="cell-index">F({{ $index }})</div>
+        <div class="cell-value">
+          {{ value === -1 ? '?' : value }}
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color current"></div>
+      <span>現在計算中</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color calculating"></div>
+      <span>計算スタック</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color memoized"></div>
+      <span>メモから取得</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color computed"></div>
+      <span>計算完了</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<div class="search-visualization">
+  <div class="search-info">
+    <div class="target-info">
+      <strong>探索ターゲット: {{ target }}</strong>
+    </div>
+    <div class="result-message" 
+         [class.found]="foundIndex !== -1 && searchComplete"
+         [class.not-found]="foundIndex === -1 && searchComplete">
+      {{ getResultMessage() }}
+    </div>
+  </div>
+
+  <div class="array-container">
+    @for (value of data; track $index) {
+      <div 
+        class="array-item" 
+        [class.current]="currentIndex === $index"
+        [class.found]="foundIndex === $index"
+        [class.searched]="$index < currentIndex || foundIndex !== -1"
+        [class.target-match]="value === target">
+        <div class="item-index">{{ $index }}</div>
+        <div class="item-value">{{ value }}</div>
+      </div>
+    }
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color current"></div>
+      <span>現在検索中</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color searched"></div>
+      <span>検索済み</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color found"></div>
+      <span>発見！</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color target-match"></div>
+      <span>ターゲット値</span>
+    </div>
+  </div>
+</div>

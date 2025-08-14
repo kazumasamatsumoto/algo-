@@ -1,0 +1,53 @@
+<div class="graph-visualization">
+  <div class="visit-order">
+    <h4>訪問順序: {{ getVisitOrderText() }}</h4>
+    <div class="stack-info">
+      <strong>スタック: [{{ stack.join(', ') }}]</strong>
+    </div>
+  </div>
+  
+  <svg width="600" height="400" class="graph-svg">
+    <!-- エッジを描画 -->
+    @for (edge of graph.edges; track edge) {
+      <line
+        [attr.x1]="getNodeX(edge.from)"
+        [attr.y1]="getNodeY(edge.from)"
+        [attr.x2]="getNodeX(edge.to)"
+        [attr.y2]="getNodeY(edge.to)"
+        class="edge-line"
+        [class.visited-edge]="visited.has(edge.from) && visited.has(edge.to)"
+      />
+    }
+
+    <!-- ノードを描画 -->
+    @for (node of graph.nodes; track node.id) {
+      <g class="node">
+        <circle
+          [attr.cx]="node.x"
+          [attr.cy]="node.y"
+          r="25"
+          class="node-circle"
+          [class.start]="node.id === startNode"
+          [class.current]="node.id === currentNode"
+          [class.visited]="visited.has(node.id)"
+        />
+        <text
+          [attr.x]="node.x"
+          [attr.y]="node.y - 5"
+          class="node-id"
+        >
+          {{ node.id }}
+        </text>
+        @if (visited.has(node.id)) {
+          <text
+            [attr.x]="node.x"
+            [attr.y]="node.y + 10"
+            class="visit-number"
+          >
+            {{ visitOrder.indexOf(node.id) + 1 }}
+          </text>
+        }
+      </g>
+    }
+  </svg>
+</div>

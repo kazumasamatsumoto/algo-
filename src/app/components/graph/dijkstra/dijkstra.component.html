@@ -1,0 +1,56 @@
+<div class="graph-visualization">
+  <svg width="600" height="400" class="graph-svg">
+    <!-- エッジを描画 -->
+    @for (edge of graph.edges; track edge) {
+      <g class="edge">
+        <line
+          [attr.x1]="getNodeX(edge.from)"
+          [attr.y1]="getNodeY(edge.from)"
+          [attr.x2]="getNodeX(edge.to)"
+          [attr.y2]="getNodeY(edge.to)"
+          class="edge-line"
+          [class.path]="pathNodes.has(edge.from) && pathNodes.has(edge.to)"
+        />
+        <!-- エッジの重み表示 -->
+        <text
+          [attr.x]="getEdgeMidX(edge)"
+          [attr.y]="getEdgeMidY(edge)"
+          class="edge-weight"
+        >
+          {{ edge.weight }}
+        </text>
+      </g>
+    }
+
+    <!-- ノードを描画 -->
+    @for (node of graph.nodes; track node.id) {
+      <g class="node">
+        <circle
+          [attr.cx]="node.x"
+          [attr.cy]="node.y"
+          r="25"
+          class="node-circle"
+          [class.start]="node.id === startNode"
+          [class.end]="node.id === endNode"
+          [class.current]="node.id === currentNode"
+          [class.visited]="visited.has(node.id)"
+          [class.path]="pathNodes.has(node.id)"
+        />
+        <text
+          [attr.x]="node.x"
+          [attr.y]="node.y - 5"
+          class="node-id"
+        >
+          {{ node.id }}
+        </text>
+        <text
+          [attr.x]="node.x"
+          [attr.y]="node.y + 10"
+          class="node-distance"
+        >
+          {{ getNodeDistance(node.id) }}
+        </text>
+      </g>
+    }
+  </svg>
+</div>

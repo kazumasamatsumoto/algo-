@@ -1,0 +1,1258 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
+
+type AlgorithmType = 'bubble-sort' | 'quick-sort' | 'merge-sort' | 'selection-sort' | 'heap-sort' | 'insertion-sort' | 'linear-search' | 'binary-search' | 'fibonacci' | 'dijkstra' | 'dfs' | 'bfs' | 'floyd-warshall' | 'kruskal' | 'coin-change' | 'knapsack' | 'a-star' | 'lcs';
+
+interface GraphNode {
+  id: number;
+  x: number;
+  y: number;
+  distances?: { [key: number]: number };
+}
+
+interface GraphEdge {
+  from: number;
+  to: number;
+  weight: number;
+}
+
+interface Graph {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+}
+
+interface AlgorithmSettings {
+  arraySize: number;
+  speed: number;
+  dataType: 'random' | 'sorted' | 'reverse' | 'nearly-sorted';
+  showStepCount: boolean;
+  graphType: 'complete' | 'sparse' | 'chain' | 'tree';
+}
+
+interface ComparisonResult {
+  algorithm: AlgorithmType;
+  steps: number;
+  time: number;
+  swaps?: number;
+  comparisons?: number;
+}
+
+@Component({
+  selector: 'app-root',
+  imports: [RouterOutlet, CommonModule],
+  templateUrl: './app.html',
+  styleUrl: './app.css'
+})
+export class App {
+  selectedAlgorithm: AlgorithmType | null = null;
+  isRunning = false;
+  visualizationData: number[] = [];
+  highlightedIndices: number[] = [];
+  comparingIndices: number[] = [];
+  fibonacciSequence: number[] = [];
+  highlightedFibIndex = -1;
+  
+  // グラフアルゴリズム用
+  graph: Graph = { nodes: [], edges: [] };
+  visitedNodes: number[] = [];
+  currentNode: number = -1;
+  pathNodes: number[] = [];
+  
+  // 動的プログラミング用
+  dpTable: number[][] = [];
+  dpItems: { weight: number; value: number; name: string }[] = [];
+  dpCapacity = 0;
+  
+  // 貪欲法用
+  coinChangeResult: { coin: number; count: number }[] = [];
+  targetAmount = 0;
+
+  // 設定とカスタマイズ
+  settings: AlgorithmSettings = {
+    arraySize: 20,
+    speed: 300,
+    dataType: 'random',
+    showStepCount: true,
+    graphType: 'sparse'
+  };
+
+  // 統計情報
+  stepCount = 0;
+  swapCount = 0;
+  comparisonCount = 0;
+  executionStartTime = 0;
+  
+  // 比較モード
+  isComparisonMode = false;
+  comparisonResults: ComparisonResult[] = [];
+  
+  // 追加のアルゴリズム用
+  lcsStrings: { str1: string; str2: string } = { str1: 'ABCDGH', str2: 'AEDFHR' };
+  lcsTable: string[][] = [];
+  pathMatrix: number[][]= [];
+  
+  // A*アルゴリズム用
+  startNode = 0;
+  goalNode = 5;
+  openSet: number[] = [];
+  closedSet: number[] = [];
+
+  constructor() {
+    this.initializeRandomData();
+  }
+
+  selectAlgorithm(algorithm: AlgorithmType): void {
+    // 実行中の場合は停止
+    if (this.isRunning) {
+      this.forceStop();
+    }
+    
+    this.selectedAlgorithm = algorithm;
+    this.resetVisualization();
+  }
+
+  initializeRandomData(): void {
+    const size = this.settings.arraySize;
+    
+    switch (this.settings.dataType) {
+      case 'random':
+        this.visualizationData = Array.from(
+          { length: size }, 
+          () => Math.floor(Math.random() * 80) + 10
+        );
+        break;
+      case 'sorted':
+        this.visualizationData = Array.from(
+          { length: size }, 
+          (_, i) => (i + 1) * 4 + 10
+        );
+        break;
+      case 'reverse':
+        this.visualizationData = Array.from(
+          { length: size }, 
+          (_, i) => (size - i) * 4 + 10
+        );
+        break;
+      case 'nearly-sorted':
+        this.visualizationData = Array.from(
+          { length: size }, 
+          (_, i) => (i + 1) * 4 + 10 + (Math.random() > 0.8 ? Math.floor(Math.random() * 20) - 10 : 0)
+        );
+        break;
+    }
+  }
+
+  runAlgorithm(): void {
+    if (!this.selectedAlgorithm || this.isRunning) return;
+
+    this.isRunning = true;
+    this.highlightedIndices = [];
+    this.comparingIndices = [];
+    
+    // 統計情報をリセット
+    this.stepCount = 0;
+    this.swapCount = 0;
+    this.comparisonCount = 0;
+    this.executionStartTime = Date.now();
+
+    switch (this.selectedAlgorithm) {
+      case 'bubble-sort':
+        this.runBubbleSort();
+        break;
+      case 'quick-sort':
+        this.runQuickSort();
+        break;
+      case 'merge-sort':
+        this.runMergeSort();
+        break;
+      case 'linear-search':
+        this.runLinearSearch();
+        break;
+      case 'binary-search':
+        this.runBinarySearch();
+        break;
+      case 'fibonacci':
+        this.runFibonacci();
+        break;
+      case 'dijkstra':
+        this.runDijkstra();
+        break;
+      case 'dfs':
+        this.runDFS();
+        break;
+      case 'bfs':
+        this.runBFS();
+        break;
+      case 'coin-change':
+        this.runCoinChange();
+        break;
+      case 'knapsack':
+        this.runKnapsack();
+        break;
+      case 'selection-sort':
+        this.runSelectionSort();
+        break;
+      case 'heap-sort':
+        this.runHeapSort();
+        break;
+      case 'insertion-sort':
+        this.runInsertionSort();
+        break;
+      case 'floyd-warshall':
+        this.runFloydWarshall();
+        break;
+      case 'kruskal':
+        this.runKruskal();
+        break;
+      case 'a-star':
+        this.runAStar();
+        break;
+      case 'lcs':
+        this.runLCS();
+        break;
+    }
+  }
+
+  resetVisualization(): void {
+    // 実行中の処理を完全に停止
+    this.forceStop();
+    
+    // すべての状態をリセット
+    this.highlightedIndices = [];
+    this.comparingIndices = [];
+    this.fibonacciSequence = [];
+    this.highlightedFibIndex = -1;
+    this.visitedNodes = [];
+    this.currentNode = -1;
+    this.pathNodes = [];
+    this.dpTable = [];
+    this.coinChangeResult = [];
+    
+    // アルゴリズムに応じてデータを初期化
+    if (this.selectedAlgorithm === 'fibonacci') {
+      this.fibonacciSequence = [];
+    } else if (this.isGraphAlgorithm()) {
+      this.initializeGraph();
+    } else if (this.selectedAlgorithm === 'knapsack') {
+      this.initializeKnapsack();
+    } else if (this.selectedAlgorithm === 'coin-change') {
+      this.initializeCoinChange();
+    } else {
+      this.initializeRandomData();
+    }
+  }
+
+  private forceStop(): void {
+    this.isRunning = false;
+    // タイマーやPromiseをクリアするため、少し待機
+    setTimeout(() => {
+      this.highlightedIndices = [];
+      this.comparingIndices = [];
+      this.highlightedFibIndex = -1;
+    }, 100);
+  }
+
+  async runBubbleSort(): Promise<void> {
+    const arr = [...this.visualizationData];
+    const n = arr.length;
+
+    for (let i = 0; i < n - 1 && this.isRunning; i++) {
+      for (let j = 0; j < n - i - 1 && this.isRunning; j++) {
+        if (!this.isRunning) break;
+        
+        this.comparingIndices = [j, j + 1];
+        await this.delay(200);
+        
+        if (!this.isRunning) break;
+
+        if (arr[j] > arr[j + 1]) {
+          [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+          this.visualizationData = [...arr];
+          this.highlightedIndices = [j, j + 1];
+          await this.delay(300);
+        }
+      }
+    }
+
+    if (this.isRunning) {
+      this.highlightedIndices = [];
+      this.comparingIndices = [];
+      this.isRunning = false;
+    }
+  }
+
+  async runQuickSort(): Promise<void> {
+    const arr = [...this.visualizationData];
+    await this.quickSortHelper(arr, 0, arr.length - 1);
+    if (this.isRunning) {
+      this.visualizationData = arr;
+      this.highlightedIndices = [];
+      this.comparingIndices = [];
+      this.isRunning = false;
+    }
+  }
+
+  private async quickSortHelper(arr: number[], low: number, high: number): Promise<void> {
+    if (low < high && this.isRunning) {
+      const pi = await this.partition(arr, low, high);
+      if (this.isRunning) {
+        await this.quickSortHelper(arr, low, pi - 1);
+      }
+      if (this.isRunning) {
+        await this.quickSortHelper(arr, pi + 1, high);
+      }
+    }
+  }
+
+  private async partition(arr: number[], low: number, high: number): Promise<number> {
+    const pivot = arr[high];
+    let i = low - 1;
+
+    for (let j = low; j < high && this.isRunning; j++) {
+      if (!this.isRunning) break;
+      
+      this.comparingIndices = [j, high];
+      await this.delay(200);
+      
+      if (!this.isRunning) break;
+
+      if (arr[j] < pivot) {
+        i++;
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+        this.visualizationData = [...arr];
+        this.highlightedIndices = [i, j];
+        await this.delay(300);
+      }
+    }
+
+    if (this.isRunning) {
+      [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+      this.visualizationData = [...arr];
+    }
+    return i + 1;
+  }
+
+  async runMergeSort(): Promise<void> {
+    const arr = [...this.visualizationData];
+    await this.mergeSortHelper(arr, 0, arr.length - 1);
+    if (this.isRunning) {
+      this.visualizationData = arr;
+      this.highlightedIndices = [];
+      this.comparingIndices = [];
+      this.isRunning = false;
+    }
+  }
+
+  private async mergeSortHelper(arr: number[], left: number, right: number): Promise<void> {
+    if (left < right && this.isRunning) {
+      const mid = Math.floor((left + right) / 2);
+      await this.mergeSortHelper(arr, left, mid);
+      if (this.isRunning) {
+        await this.mergeSortHelper(arr, mid + 1, right);
+      }
+      if (this.isRunning) {
+        await this.merge(arr, left, mid, right);
+      }
+    }
+  }
+
+  private async merge(arr: number[], left: number, mid: number, right: number): Promise<void> {
+    const leftArr = arr.slice(left, mid + 1);
+    const rightArr = arr.slice(mid + 1, right + 1);
+
+    let i = 0, j = 0, k = left;
+
+    while (i < leftArr.length && j < rightArr.length && this.isRunning) {
+      if (!this.isRunning) break;
+      
+      this.comparingIndices = [left + i, mid + 1 + j];
+      await this.delay(200);
+      
+      if (!this.isRunning) break;
+
+      if (leftArr[i] <= rightArr[j]) {
+        arr[k] = leftArr[i];
+        i++;
+      } else {
+        arr[k] = rightArr[j];
+        j++;
+      }
+      
+      this.visualizationData = [...arr];
+      this.highlightedIndices = [k];
+      k++;
+      await this.delay(300);
+    }
+
+    while (i < leftArr.length && this.isRunning) {
+      if (!this.isRunning) break;
+      
+      arr[k] = leftArr[i];
+      this.visualizationData = [...arr];
+      this.highlightedIndices = [k];
+      i++;
+      k++;
+      await this.delay(200);
+    }
+
+    while (j < rightArr.length && this.isRunning) {
+      if (!this.isRunning) break;
+      
+      arr[k] = rightArr[j];
+      this.visualizationData = [...arr];
+      this.highlightedIndices = [k];
+      j++;
+      k++;
+      await this.delay(200);
+    }
+  }
+
+  async runLinearSearch(): Promise<void> {
+    const target = this.visualizationData[Math.floor(Math.random() * this.visualizationData.length)];
+    
+    for (let i = 0; i < this.visualizationData.length && this.isRunning; i++) {
+      if (!this.isRunning) break;
+      
+      this.highlightedIndices = [i];
+      await this.delay(300);
+      
+      if (!this.isRunning) break;
+
+      if (this.visualizationData[i] === target) {
+        this.comparingIndices = [i];
+        await this.delay(1000);
+        break;
+      }
+    }
+
+    if (this.isRunning) {
+      this.highlightedIndices = [];
+      this.comparingIndices = [];
+      this.isRunning = false;
+    }
+  }
+
+  async runBinarySearch(): Promise<void> {
+    const sortedData = [...this.visualizationData].sort((a, b) => a - b);
+    this.visualizationData = sortedData;
+    await this.delay(500);
+    
+    if (!this.isRunning) return;
+
+    const target = sortedData[Math.floor(Math.random() * sortedData.length)];
+    let left = 0;
+    let right = sortedData.length - 1;
+
+    while (left <= right && this.isRunning) {
+      if (!this.isRunning) break;
+      
+      const mid = Math.floor((left + right) / 2);
+      this.highlightedIndices = [left, right];
+      this.comparingIndices = [mid];
+      await this.delay(600);
+      
+      if (!this.isRunning) break;
+
+      if (sortedData[mid] === target) {
+        this.highlightedIndices = [mid];
+        await this.delay(1000);
+        break;
+      } else if (sortedData[mid] < target) {
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+
+    if (this.isRunning) {
+      this.highlightedIndices = [];
+      this.comparingIndices = [];
+      this.isRunning = false;
+    }
+  }
+
+  async runFibonacci(): Promise<void> {
+    this.fibonacciSequence = [];
+    const fibCount = 15;
+
+    for (let i = 0; i < fibCount && this.isRunning; i++) {
+      if (!this.isRunning) break;
+      
+      const fibValue = this.fibonacci(i);
+      this.fibonacciSequence.push(fibValue);
+      this.highlightedFibIndex = i;
+      await this.delay(400);
+    }
+
+    if (this.isRunning) {
+      this.highlightedFibIndex = -1;
+      this.isRunning = false;
+    }
+  }
+
+  private fibonacci(n: number): number {
+    if (n <= 1) return n;
+    return this.fibonacci(n - 1) + this.fibonacci(n - 2);
+  }
+
+  // 新しいソートアルゴリズムの実装
+  async runSelectionSort(): Promise<void> {
+    const arr = [...this.visualizationData];
+    const n = arr.length;
+
+    for (let i = 0; i < n - 1 && this.isRunning; i++) {
+      let minIndex = i;
+      this.highlightedIndices = [i];
+
+      for (let j = i + 1; j < n && this.isRunning; j++) {
+        if (!this.isRunning) break;
+        
+        this.comparingIndices = [minIndex, j];
+        this.comparisonCount++;
+        await this.delay(this.settings.speed);
+
+        if (arr[j] < arr[minIndex]) {
+          minIndex = j;
+          this.highlightedIndices = [minIndex];
+        }
+      }
+
+      if (minIndex !== i && this.isRunning) {
+        [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
+        this.visualizationData = [...arr];
+        this.swapCount++;
+        this.stepCount++;
+        await this.delay(this.settings.speed);
+      }
+    }
+
+    if (this.isRunning) {
+      this.highlightedIndices = [];
+      this.comparingIndices = [];
+      this.isRunning = false;
+    }
+  }
+
+  async runInsertionSort(): Promise<void> {
+    const arr = [...this.visualizationData];
+    const n = arr.length;
+
+    for (let i = 1; i < n && this.isRunning; i++) {
+      const key = arr[i];
+      let j = i - 1;
+      
+      this.highlightedIndices = [i];
+      await this.delay(this.settings.speed);
+
+      while (j >= 0 && arr[j] > key && this.isRunning) {
+        if (!this.isRunning) break;
+        
+        this.comparingIndices = [j, j + 1];
+        this.comparisonCount++;
+        
+        arr[j + 1] = arr[j];
+        this.visualizationData = [...arr];
+        this.stepCount++;
+        await this.delay(this.settings.speed);
+        j--;
+      }
+      
+      if (this.isRunning) {
+        arr[j + 1] = key;
+        this.visualizationData = [...arr];
+      }
+    }
+
+    if (this.isRunning) {
+      this.highlightedIndices = [];
+      this.comparingIndices = [];
+      this.isRunning = false;
+    }
+  }
+
+  async runHeapSort(): Promise<void> {
+    const arr = [...this.visualizationData];
+    const n = arr.length;
+
+    // ヒープを構築
+    for (let i = Math.floor(n / 2) - 1; i >= 0 && this.isRunning; i--) {
+      await this.heapify(arr, n, i);
+    }
+
+    // 要素を一つずつ抽出
+    for (let i = n - 1; i > 0 && this.isRunning; i--) {
+      if (!this.isRunning) break;
+      
+      // 現在のルートを最後に移動
+      [arr[0], arr[i]] = [arr[i], arr[0]];
+      this.visualizationData = [...arr];
+      this.swapCount++;
+      this.highlightedIndices = [0, i];
+      await this.delay(this.settings.speed);
+
+      // ヒープのサイズを減らして再度ヒープ化
+      await this.heapify(arr, i, 0);
+    }
+
+    if (this.isRunning) {
+      this.highlightedIndices = [];
+      this.comparingIndices = [];
+      this.isRunning = false;
+    }
+  }
+
+  private async heapify(arr: number[], n: number, i: number): Promise<void> {
+    let largest = i;
+    const left = 2 * i + 1;
+    const right = 2 * i + 2;
+
+    if (left < n && arr[left] > arr[largest]) {
+      largest = left;
+      this.comparisonCount++;
+    }
+
+    if (right < n && arr[right] > arr[largest]) {
+      largest = right;
+      this.comparisonCount++;
+    }
+
+    if (largest !== i && this.isRunning) {
+      [arr[i], arr[largest]] = [arr[largest], arr[i]];
+      this.visualizationData = [...arr];
+      this.swapCount++;
+      this.stepCount++;
+      this.comparingIndices = [i, largest];
+      await this.delay(this.settings.speed);
+
+      await this.heapify(arr, n, largest);
+    }
+  }
+
+  // 新しいグラフアルゴリズムの実装
+  async runFloydWarshall(): Promise<void> {
+    if (this.graph.nodes.length === 0) {
+      this.initializeGraph();
+    }
+
+    const n = this.graph.nodes.length;
+    const dist: number[][] = Array(n).fill(null).map(() => Array(n).fill(Infinity));
+    
+    // 初期化
+    for (let i = 0; i < n; i++) {
+      dist[i][i] = 0;
+    }
+    
+    for (const edge of this.graph.edges) {
+      dist[edge.from][edge.to] = edge.weight;
+    }
+
+    // フロイド・ワーシャル法
+    for (let k = 0; k < n && this.isRunning; k++) {
+      this.currentNode = k;
+      await this.delay(this.settings.speed * 2);
+      
+      for (let i = 0; i < n && this.isRunning; i++) {
+        for (let j = 0; j < n && this.isRunning; j++) {
+          if (!this.isRunning) break;
+          
+          if (dist[i][k] + dist[k][j] < dist[i][j]) {
+            dist[i][j] = dist[i][k] + dist[k][j];
+            this.visitedNodes = [i, k, j];
+            await this.delay(this.settings.speed);
+          }
+        }
+      }
+    }
+
+    if (this.isRunning) {
+      this.pathMatrix = dist;
+      this.isRunning = false;
+    }
+  }
+
+  async runKruskal(): Promise<void> {
+    if (this.graph.nodes.length === 0) {
+      this.initializeGraph();
+    }
+
+    const edges = [...this.graph.edges].sort((a, b) => a.weight - b.weight);
+    const parent: number[] = Array.from({ length: this.graph.nodes.length }, (_, i) => i);
+    const mst: GraphEdge[] = [];
+
+    const find = (x: number): number => {
+      if (parent[x] !== x) {
+        parent[x] = find(parent[x]);
+      }
+      return parent[x];
+    };
+
+    const union = (x: number, y: number): void => {
+      const rootX = find(x);
+      const rootY = find(y);
+      if (rootX !== rootY) {
+        parent[rootX] = rootY;
+      }
+    };
+
+    for (const edge of edges) {
+      if (!this.isRunning) break;
+      
+      this.visitedNodes = [edge.from, edge.to];
+      await this.delay(this.settings.speed);
+
+      if (find(edge.from) !== find(edge.to)) {
+        union(edge.from, edge.to);
+        mst.push(edge);
+        this.pathNodes = [...mst.flatMap(e => [e.from, e.to])];
+        await this.delay(this.settings.speed);
+      }
+    }
+
+    if (this.isRunning) {
+      this.isRunning = false;
+    }
+  }
+
+  // A*アルゴリズム
+  async runAStar(): Promise<void> {
+    if (this.graph.nodes.length === 0) {
+      this.initializeGraph();
+    }
+
+    const gScore: { [key: number]: number } = {};
+    const fScore: { [key: number]: number } = {};
+    const cameFrom: { [key: number]: number } = {};
+    
+    this.openSet = [this.startNode];
+    this.closedSet = [];
+    
+    this.graph.nodes.forEach(node => {
+      gScore[node.id] = node.id === this.startNode ? 0 : Infinity;
+      fScore[node.id] = node.id === this.startNode ? this.heuristic(node.id, this.goalNode) : Infinity;
+    });
+
+    while (this.openSet.length > 0 && this.isRunning) {
+      if (!this.isRunning) break;
+
+      // 最小fScoreのノードを選択
+      let current = this.openSet.reduce((min, node) => fScore[node] < fScore[min] ? node : min);
+      
+      this.currentNode = current;
+      await this.delay(this.settings.speed);
+
+      if (current === this.goalNode) {
+        // パスを再構築
+        const path = [];
+        while (current in cameFrom) {
+          path.unshift(current);
+          current = cameFrom[current];
+        }
+        path.unshift(this.startNode);
+        this.pathNodes = path;
+        break;
+      }
+
+      this.openSet = this.openSet.filter(node => node !== current);
+      this.closedSet.push(current);
+
+      // 隣接ノードを調べる
+      const neighbors = this.graph.edges
+        .filter(edge => edge.from === current)
+        .map(edge => edge.to);
+
+      for (const neighbor of neighbors) {
+        if (this.closedSet.includes(neighbor)) continue;
+
+        const tentativeGScore = gScore[current] + this.getEdgeWeight(current, neighbor);
+
+        if (!this.openSet.includes(neighbor)) {
+          this.openSet.push(neighbor);
+        } else if (tentativeGScore >= gScore[neighbor]) {
+          continue;
+        }
+
+        cameFrom[neighbor] = current;
+        gScore[neighbor] = tentativeGScore;
+        fScore[neighbor] = gScore[neighbor] + this.heuristic(neighbor, this.goalNode);
+      }
+    }
+
+    if (this.isRunning) {
+      this.isRunning = false;
+    }
+  }
+
+  private heuristic(nodeA: number, nodeB: number): number {
+    const a = this.graph.nodes[nodeA];
+    const b = this.graph.nodes[nodeB];
+    return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+  }
+
+  private getEdgeWeight(from: number, to: number): number {
+    const edge = this.graph.edges.find(e => e.from === from && e.to === to);
+    return edge ? edge.weight : Infinity;
+  }
+
+  // 最長共通部分列 (LCS)
+  async runLCS(): Promise<void> {
+    const str1 = this.lcsStrings.str1;
+    const str2 = this.lcsStrings.str2;
+    const m = str1.length;
+    const n = str2.length;
+
+    this.lcsTable = Array(m + 1).fill(null).map(() => Array(n + 1).fill(''));
+    const dp: number[][] = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
+
+    for (let i = 1; i <= m && this.isRunning; i++) {
+      for (let j = 1; j <= n && this.isRunning; j++) {
+        if (!this.isRunning) break;
+
+        this.highlightedIndices = [i - 1, j - 1];
+        await this.delay(this.settings.speed);
+
+        if (str1[i - 1] === str2[j - 1]) {
+          dp[i][j] = dp[i - 1][j - 1] + 1;
+          this.lcsTable[i][j] = this.lcsTable[i - 1][j - 1] + str1[i - 1];
+        } else {
+          dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+          this.lcsTable[i][j] = dp[i - 1][j] > dp[i][j - 1] ? 
+            this.lcsTable[i - 1][j] : this.lcsTable[i][j - 1];
+        }
+
+        this.stepCount++;
+      }
+    }
+
+    if (this.isRunning) {
+      this.highlightedIndices = [];
+      this.isRunning = false;
+    }
+  }
+
+  // 新しいアルゴリズムの実装
+  async runDijkstra(): Promise<void> {
+    if (this.graph.nodes.length === 0) {
+      this.initializeGraph();
+    }
+
+    const startNode = 0;
+    const distances: { [key: number]: number } = {};
+    const visited: Set<number> = new Set();
+    const previous: { [key: number]: number | null } = {};
+
+    // 初期化
+    this.graph.nodes.forEach(node => {
+      distances[node.id] = node.id === startNode ? 0 : Infinity;
+      previous[node.id] = null;
+    });
+
+    while (visited.size < this.graph.nodes.length && this.isRunning) {
+      if (!this.isRunning) break;
+
+      // 未訪問の中で最小距離のノードを選択
+      let currentNodeId = -1;
+      let minDistance = Infinity;
+      
+      for (const nodeId in distances) {
+        const id = parseInt(nodeId);
+        if (!visited.has(id) && distances[id] < minDistance) {
+          minDistance = distances[id];
+          currentNodeId = id;
+        }
+      }
+
+      if (currentNodeId === -1) break;
+
+      visited.add(currentNodeId);
+      this.visitedNodes = Array.from(visited);
+      this.currentNode = currentNodeId;
+      await this.delay(800);
+
+      // 隣接ノードの距離を更新
+      const edges = this.graph.edges.filter(edge => edge.from === currentNodeId);
+      for (const edge of edges) {
+        if (!this.isRunning) break;
+        
+        const newDistance = distances[currentNodeId] + edge.weight;
+        if (newDistance < distances[edge.to]) {
+          distances[edge.to] = newDistance;
+          previous[edge.to] = currentNodeId;
+        }
+      }
+    }
+
+    if (this.isRunning) {
+      this.isRunning = false;
+    }
+  }
+
+  async runDFS(): Promise<void> {
+    if (this.graph.nodes.length === 0) {
+      this.initializeGraph();
+    }
+
+    const visited: Set<number> = new Set();
+    const stack: number[] = [0];
+
+    while (stack.length > 0 && this.isRunning) {
+      if (!this.isRunning) break;
+
+      const currentNodeId = stack.pop()!;
+      
+      if (!visited.has(currentNodeId)) {
+        visited.add(currentNodeId);
+        this.visitedNodes = Array.from(visited);
+        this.currentNode = currentNodeId;
+        await this.delay(600);
+
+        // 隣接ノードをスタックに追加（逆順で追加して順序を保持）
+        const neighbors = this.graph.edges
+          .filter(edge => edge.from === currentNodeId)
+          .map(edge => edge.to)
+          .reverse();
+
+        neighbors.forEach(neighbor => {
+          if (!visited.has(neighbor)) {
+            stack.push(neighbor);
+          }
+        });
+      }
+    }
+
+    if (this.isRunning) {
+      this.isRunning = false;
+    }
+  }
+
+  async runBFS(): Promise<void> {
+    if (this.graph.nodes.length === 0) {
+      this.initializeGraph();
+    }
+
+    const visited: Set<number> = new Set();
+    const queue: number[] = [0];
+
+    while (queue.length > 0 && this.isRunning) {
+      if (!this.isRunning) break;
+
+      const currentNodeId = queue.shift()!;
+      
+      if (!visited.has(currentNodeId)) {
+        visited.add(currentNodeId);
+        this.visitedNodes = Array.from(visited);
+        this.currentNode = currentNodeId;
+        await this.delay(600);
+
+        // 隣接ノードをキューに追加
+        const neighbors = this.graph.edges
+          .filter(edge => edge.from === currentNodeId)
+          .map(edge => edge.to);
+
+        neighbors.forEach(neighbor => {
+          if (!visited.has(neighbor) && !queue.includes(neighbor)) {
+            queue.push(neighbor);
+          }
+        });
+      }
+    }
+
+    if (this.isRunning) {
+      this.isRunning = false;
+    }
+  }
+
+  async runCoinChange(): Promise<void> {
+    const coins = [500, 100, 50, 10, 5, 1];
+    this.targetAmount = 843; // 例: 843円
+    this.coinChangeResult = [];
+
+    let remaining = this.targetAmount;
+
+    for (const coin of coins) {
+      if (!this.isRunning) break;
+
+      const count = Math.floor(remaining / coin);
+      if (count > 0) {
+        this.coinChangeResult.push({ coin, count });
+        remaining -= coin * count;
+        await this.delay(500);
+      }
+    }
+
+    if (this.isRunning) {
+      this.isRunning = false;
+    }
+  }
+
+  async runKnapsack(): Promise<void> {
+    const items = this.dpItems;
+    const capacity = this.dpCapacity;
+    const n = items.length;
+
+    // DPテーブル初期化
+    this.dpTable = Array(n + 1).fill(null).map(() => Array(capacity + 1).fill(0));
+
+    for (let i = 1; i <= n && this.isRunning; i++) {
+      if (!this.isRunning) break;
+
+      for (let w = 1; w <= capacity && this.isRunning; w++) {
+        if (!this.isRunning) break;
+
+        const item = items[i - 1];
+        
+        if (item.weight <= w) {
+          this.dpTable[i][w] = Math.max(
+            this.dpTable[i - 1][w],
+            this.dpTable[i - 1][w - item.weight] + item.value
+          );
+        } else {
+          this.dpTable[i][w] = this.dpTable[i - 1][w];
+        }
+
+        await this.delay(100);
+      }
+    }
+
+    if (this.isRunning) {
+      this.isRunning = false;
+    }
+  }
+
+  // ヘルパーメソッド
+  initializeGraph(): void {
+    this.graph = {
+      nodes: [
+        { id: 0, x: 100, y: 100 },
+        { id: 1, x: 200, y: 50 },
+        { id: 2, x: 300, y: 100 },
+        { id: 3, x: 150, y: 200 },
+        { id: 4, x: 250, y: 200 },
+        { id: 5, x: 350, y: 150 }
+      ],
+      edges: [
+        { from: 0, to: 1, weight: 4 },
+        { from: 0, to: 3, weight: 2 },
+        { from: 1, to: 2, weight: 3 },
+        { from: 1, to: 4, weight: 5 },
+        { from: 2, to: 5, weight: 1 },
+        { from: 3, to: 4, weight: 3 },
+        { from: 4, to: 5, weight: 2 }
+      ]
+    };
+  }
+
+  initializeKnapsack(): void {
+    this.dpItems = [
+      { weight: 2, value: 3, name: '宝石A' },
+      { weight: 3, value: 4, name: '宝石B' },
+      { weight: 4, value: 5, name: '宝石C' },
+      { weight: 5, value: 6, name: '宝石D' }
+    ];
+    this.dpCapacity = 8;
+    this.dpTable = [];
+  }
+
+  initializeCoinChange(): void {
+    this.targetAmount = 843;
+    this.coinChangeResult = [];
+  }
+
+  // 設定変更メソッド
+  updateArraySize(size: number): void {
+    this.settings.arraySize = Math.max(5, Math.min(50, size));
+    if (!this.isRunning) {
+      this.initializeRandomData();
+    }
+  }
+
+  updateSpeed(speed: number): void {
+    this.settings.speed = Math.max(50, Math.min(2000, speed));
+  }
+
+  updateDataType(type: 'random' | 'sorted' | 'reverse' | 'nearly-sorted'): void {
+    this.settings.dataType = type;
+    if (!this.isRunning) {
+      this.initializeRandomData();
+    }
+  }
+
+  toggleComparisonMode(): void {
+    this.isComparisonMode = !this.isComparisonMode;
+    this.comparisonResults = [];
+  }
+
+  async runComparison(): Promise<void> {
+    if (!this.isSortAlgorithm()) return;
+
+    const algorithms: AlgorithmType[] = ['bubble-sort', 'selection-sort', 'insertion-sort', 'quick-sort', 'merge-sort', 'heap-sort'];
+    const originalData = [...this.visualizationData];
+    this.comparisonResults = [];
+
+    for (const algorithm of algorithms) {
+      this.visualizationData = [...originalData];
+      this.selectedAlgorithm = algorithm;
+      
+      const startTime = Date.now();
+      this.stepCount = 0;
+      this.swapCount = 0;
+      this.comparisonCount = 0;
+
+      // 高速で実行（可視化なし）
+      await this.runAlgorithmFast(algorithm);
+
+      const endTime = Date.now();
+      this.comparisonResults.push({
+        algorithm,
+        steps: this.stepCount,
+        time: endTime - startTime,
+        swaps: this.swapCount,
+        comparisons: this.comparisonCount
+      });
+    }
+  }
+
+  private async runAlgorithmFast(algorithm: AlgorithmType): Promise<void> {
+    const originalSpeed = this.settings.speed;
+    this.settings.speed = 0; // 高速実行
+
+    switch (algorithm) {
+      case 'bubble-sort':
+        await this.runBubbleSort();
+        break;
+      case 'selection-sort':
+        await this.runSelectionSort();
+        break;
+      case 'insertion-sort':
+        await this.runInsertionSort();
+        break;
+      case 'quick-sort':
+        await this.runQuickSort();
+        break;
+      case 'merge-sort':
+        await this.runMergeSort();
+        break;
+      case 'heap-sort':
+        await this.runHeapSort();
+        break;
+    }
+
+    this.settings.speed = originalSpeed;
+  }
+
+  isGraphAlgorithm(): boolean {
+    return ['dijkstra', 'dfs', 'bfs', 'floyd-warshall', 'kruskal', 'a-star'].includes(this.selectedAlgorithm!);
+  }
+
+  isSortAlgorithm(): boolean {
+    return ['bubble-sort', 'quick-sort', 'merge-sort', 'selection-sort', 'heap-sort', 'insertion-sort'].includes(this.selectedAlgorithm!);
+  }
+
+  shouldShowArrayVisualization(): boolean {
+    return !['fibonacci', 'dijkstra', 'dfs', 'bfs', 'floyd-warshall', 'kruskal', 'a-star', 'coin-change', 'knapsack', 'lcs'].includes(this.selectedAlgorithm!);
+  }
+
+  getAlgorithmName(algorithm: AlgorithmType): string {
+    const names: Record<AlgorithmType, string> = {
+      'bubble-sort': 'バブルソート',
+      'quick-sort': 'クイックソート',
+      'merge-sort': 'マージソート',
+      'selection-sort': '選択ソート',
+      'heap-sort': 'ヒープソート',
+      'insertion-sort': '挿入ソート',
+      'linear-search': '線形探索',
+      'binary-search': '二分探索',
+      'fibonacci': 'フィボナッチ数列',
+      'dijkstra': 'ダイクストラ法',
+      'dfs': '深さ優先探索',
+      'bfs': '幅優先探索',
+      'floyd-warshall': 'フロイド・ワーシャル法',
+      'kruskal': 'クラスカル法',
+      'a-star': 'A*アルゴリズム',
+      'coin-change': '硬貨問題',
+      'knapsack': 'ナップサック問題',
+      'lcs': '最長共通部分列'
+    };
+    return names[algorithm];
+  }
+
+  getTimeComplexity(algorithm: AlgorithmType): string {
+    const complexities: Record<AlgorithmType, string> = {
+      'bubble-sort': 'O(n²)',
+      'quick-sort': '平均 O(n log n), 最悪 O(n²)',
+      'merge-sort': 'O(n log n)',
+      'selection-sort': 'O(n²)',
+      'heap-sort': 'O(n log n)',
+      'insertion-sort': '最良 O(n), 平均 O(n²)',
+      'linear-search': 'O(n)',
+      'binary-search': 'O(log n)',
+      'fibonacci': 'O(2^n) (ナイーブ実装)',
+      'dijkstra': 'O((V + E) log V)',
+      'dfs': 'O(V + E)',
+      'bfs': 'O(V + E)',
+      'floyd-warshall': 'O(V³)',
+      'kruskal': 'O(E log E)',
+      'a-star': 'O(b^d)',
+      'coin-change': 'O(n)',
+      'knapsack': 'O(nW)',
+      'lcs': 'O(mn)'
+    };
+    return complexities[algorithm];
+  }
+
+  getSpaceComplexity(algorithm: AlgorithmType): string {
+    const complexities: Record<AlgorithmType, string> = {
+      'bubble-sort': 'O(1)',
+      'quick-sort': 'O(log n)',
+      'merge-sort': 'O(n)',
+      'selection-sort': 'O(1)',
+      'heap-sort': 'O(1)',
+      'insertion-sort': 'O(1)',
+      'linear-search': 'O(1)',
+      'binary-search': 'O(1)',
+      'fibonacci': 'O(n) (再帰スタック)',
+      'dijkstra': 'O(V)',
+      'dfs': 'O(V)',
+      'bfs': 'O(V)',
+      'floyd-warshall': 'O(V²)',
+      'kruskal': 'O(V)',
+      'a-star': 'O(b^d)',
+      'coin-change': 'O(1)',
+      'knapsack': 'O(nW)',
+      'lcs': 'O(mn)'
+    };
+    return complexities[algorithm];
+  }
+
+  getAlgorithmDescription(algorithm: AlgorithmType): string {
+    const descriptions: Record<AlgorithmType, string> = {
+      'bubble-sort': '隣接する要素を比較して交換を繰り返すシンプルなソートアルゴリズム。理解しやすいが効率は悪い。',
+      'quick-sort': 'ピボット要素を選んで分割統治で高速にソートする。平均的に最も速いソートアルゴリズムの一つ。',
+      'merge-sort': '配列を分割してマージしながらソートする安定ソート。常にO(n log n)の性能を保証。',
+      'linear-search': '配列を先頭から順番に探索する最も基本的な探索方法。ソートされていない配列にも使える。',
+      'binary-search': 'ソート済み配列で中央値と比較して範囲を半分に絞って探索する効率的な方法。',
+      'fibonacci': '前の2つの数を足して次の数を求める数列。動的プログラミングの典型例。',
+      'selection-sort': '最小値を見つけて順番に配置する直感的なソートアルゴリズム。',
+      'insertion-sort': '既にソートされた部分に新しい要素を正しい位置に挿入するソート。小さなデータに効率的。',
+      'heap-sort': 'ヒープ構造を利用したソート。常にO(n log n)の性能を保証する。',
+      'dijkstra': '重み付きグラフで単一始点から全ノードへの最短経路を求めるアルゴリズム。',
+      'floyd-warshall': '全点対間最短経路問題を解く動的プログラミング手法。',
+      'kruskal': 'エッジの重みでソートして最小全域木を構築する貪欲アルゴリズム。',
+      'a-star': 'ヒューリスティック関数を使用した効率的な最短経路探索アルゴリズム。',
+      'dfs': 'スタックを使ってグラフを深く探索する方法。迷路の探索などに使われる。',
+      'bfs': 'キューを使ってグラフを幅広く探索する方法。最短経路の発見に適している。',
+      'coin-change': '指定した金額を最少枚数の硬貨で支払う貪欲アルゴリズム。',
+      'knapsack': '容量制限内で価値を最大化するアイテムの組み合わせを求める動的プログラミング。',
+      'lcs': '2つの文字列間で共通する最も長い部分列を見つける動的プログラミング手法。'
+    };
+    return descriptions[algorithm];
+  }
+
+  getRange(n: number): number[] {
+    return Array.from({ length: n }, (_, i) => i);
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+}

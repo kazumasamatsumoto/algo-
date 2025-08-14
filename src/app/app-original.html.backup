@@ -1,0 +1,402 @@
+<div class="algorithm-app">
+  <header class="app-header">
+    <h1>アルゴリズムの世界</h1>
+    <p>アルゴリズムを可視化して学ぼう</p>
+  </header>
+
+  <main class="main-content">
+    <nav class="algorithm-nav">
+      <h2>アルゴリズム分野</h2>
+      <div class="nav-categories">
+        <div class="category-section">
+          <h3>ソートアルゴリズム</h3>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'bubble-sort'"
+            (click)="selectAlgorithm('bubble-sort')">
+            バブルソート
+          </button>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'selection-sort'"
+            (click)="selectAlgorithm('selection-sort')">
+            選択ソート
+          </button>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'insertion-sort'"
+            (click)="selectAlgorithm('insertion-sort')">
+            挿入ソート
+          </button>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'quick-sort'"
+            (click)="selectAlgorithm('quick-sort')">
+            クイックソート
+          </button>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'merge-sort'"
+            (click)="selectAlgorithm('merge-sort')">
+            マージソート
+          </button>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'heap-sort'"
+            (click)="selectAlgorithm('heap-sort')">
+            ヒープソート
+          </button>
+        </div>
+
+        <div class="category-section">
+          <h3>探索アルゴリズム</h3>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'linear-search'"
+            (click)="selectAlgorithm('linear-search')">
+            線形探索
+          </button>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'binary-search'"
+            (click)="selectAlgorithm('binary-search')">
+            二分探索
+          </button>
+        </div>
+
+        <div class="category-section">
+          <h3>グラフアルゴリズム</h3>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'dijkstra'"
+            (click)="selectAlgorithm('dijkstra')">
+            ダイクストラ法
+          </button>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'floyd-warshall'"
+            (click)="selectAlgorithm('floyd-warshall')">
+            フロイド・ワーシャル法
+          </button>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'kruskal'"
+            (click)="selectAlgorithm('kruskal')">
+            クラスカル法 (MST)
+          </button>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'a-star'"
+            (click)="selectAlgorithm('a-star')">
+            A*アルゴリズム
+          </button>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'dfs'"
+            (click)="selectAlgorithm('dfs')">
+            深さ優先探索 (DFS)
+          </button>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'bfs'"
+            (click)="selectAlgorithm('bfs')">
+            幅優先探索 (BFS)
+          </button>
+        </div>
+
+        <div class="category-section">
+          <h3>動的プログラミング</h3>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'fibonacci'"
+            (click)="selectAlgorithm('fibonacci')">
+            フィボナッチ数列
+          </button>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'knapsack'"
+            (click)="selectAlgorithm('knapsack')">
+            ナップサック問題
+          </button>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'lcs'"
+            (click)="selectAlgorithm('lcs')">
+            最長共通部分列 (LCS)
+          </button>
+        </div>
+
+        <div class="category-section">
+          <h3>貪欲法</h3>
+          <button 
+            class="algorithm-btn" 
+            [class.active]="selectedAlgorithm === 'coin-change'"
+            (click)="selectAlgorithm('coin-change')">
+            硬貨問題
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <section class="algorithm-display">
+      @if (selectedAlgorithm) {
+        <div class="algorithm-info">
+          <h2>{{ getAlgorithmName(selectedAlgorithm) }}</h2>
+          <div class="complexity-info">
+            <div class="complexity-item">
+              <strong>時間計算量:</strong> {{ getTimeComplexity(selectedAlgorithm) }}
+            </div>
+            <div class="complexity-item">
+              <strong>空間計算量:</strong> {{ getSpaceComplexity(selectedAlgorithm) }}
+            </div>
+          </div>
+          <p class="algorithm-description">{{ getAlgorithmDescription(selectedAlgorithm) }}</p>
+        </div>
+
+        <!-- 設定パネル -->
+        <div class="settings-panel">
+          <h3>設定とカスタマイズ</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label>配列サイズ: {{ settings.arraySize }}</label>
+              <input type="range" min="5" max="50" [value]="settings.arraySize" 
+                     (input)="updateArraySize(+$any($event.target).value)" [disabled]="isRunning">
+            </div>
+            <div class="setting-item">
+              <label>実行速度: {{ settings.speed }}ms</label>
+              <input type="range" min="50" max="2000" step="50" [value]="settings.speed" 
+                     (input)="updateSpeed(+$any($event.target).value)">
+            </div>
+            <div class="setting-item">
+              <label>データ種類:</label>
+              <select [value]="settings.dataType" (change)="updateDataType($any($event.target).value)" [disabled]="isRunning">
+                <option value="random">ランダム</option>
+                <option value="sorted">ソート済み</option>
+                <option value="reverse">逆順</option>
+                <option value="nearly-sorted">ほぼソート済み</option>
+              </select>
+            </div>
+            <div class="setting-item" *ngIf="isSortAlgorithm()">
+              <button class="comparison-btn" (click)="toggleComparisonMode()" [disabled]="isRunning">
+                {{ isComparisonMode ? '通常モード' : '比較モード' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 統計情報 -->
+        <div class="stats-panel" *ngIf="settings.showStepCount && (stepCount > 0 || swapCount > 0 || comparisonCount > 0)">
+          <h3>実行統計</h3>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-label">ステップ数:</span>
+              <span class="stat-value">{{ stepCount }}</span>
+            </div>
+            <div class="stat-item" *ngIf="swapCount > 0">
+              <span class="stat-label">交換回数:</span>
+              <span class="stat-value">{{ swapCount }}</span>
+            </div>
+            <div class="stat-item" *ngIf="comparisonCount > 0">
+              <span class="stat-label">比較回数:</span>
+              <span class="stat-value">{{ comparisonCount }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="visualization-area">
+          <div class="controls">
+            <button class="control-btn" (click)="isComparisonMode ? runComparison() : runAlgorithm()" [disabled]="isRunning">
+              {{ isRunning ? '実行中...' : (isComparisonMode ? 'すべて比較' : '実行') }}
+            </button>
+            <button class="control-btn" (click)="resetVisualization()">リセット</button>
+          </div>
+
+          <!-- 比較結果表示 -->
+          <div class="comparison-results" *ngIf="isComparisonMode && comparisonResults.length > 0">
+            <h3>アルゴリズム比較結果</h3>
+            <div class="comparison-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>アルゴリズム</th>
+                    <th>実行時間 (ms)</th>
+                    <th>比較回数</th>
+                    <th>交換回数</th>
+                    <th>ステップ数</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (result of comparisonResults; track result.algorithm) {
+                    <tr>
+                      <td>{{ getAlgorithmName(result.algorithm) }}</td>
+                      <td>{{ result.time }}</td>
+                      <td>{{ result.comparisons || '-' }}</td>
+                      <td>{{ result.swaps || '-' }}</td>
+                      <td>{{ result.steps }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="array-visualization" *ngIf="shouldShowArrayVisualization()">
+            <div class="array-container">
+              @for (value of visualizationData; track $index) {
+                <div 
+                  class="array-bar" 
+                  [style.height.px]="value * 3"
+                  [class.highlight]="highlightedIndices.includes($index)"
+                  [class.comparing]="comparingIndices.includes($index)">
+                  <span class="bar-value">{{ value }}</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="fibonacci-visualization" *ngIf="selectedAlgorithm === 'fibonacci'">
+            <div class="fibonacci-sequence">
+              @for (fib of fibonacciSequence; track $index) {
+                <div class="fibonacci-number" [class.highlight]="$index === highlightedFibIndex">
+                  {{ fib }}
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="graph-visualization" *ngIf="isGraphAlgorithm()">
+            <div class="graph-container">
+              <svg viewBox="0 0 450 300" class="graph-svg">
+                <!-- エッジ（線）を描画 -->
+                @for (edge of graph.edges; track edge.from + '-' + edge.to) {
+                  <line 
+                    [attr.x1]="graph.nodes[edge.from].x" 
+                    [attr.y1]="graph.nodes[edge.from].y"
+                    [attr.x2]="graph.nodes[edge.to].x" 
+                    [attr.y2]="graph.nodes[edge.to].y"
+                    class="graph-edge" />
+                  <!-- エッジの重み表示 -->
+                  <text 
+                    [attr.x]="(graph.nodes[edge.from].x + graph.nodes[edge.to].x) / 2"
+                    [attr.y]="(graph.nodes[edge.from].y + graph.nodes[edge.to].y) / 2 - 5"
+                    class="edge-weight">
+                    {{ edge.weight }}
+                  </text>
+                }
+                
+                <!-- ノード（頂点）を描画 -->
+                @for (node of graph.nodes; track node.id) {
+                  <circle 
+                    [attr.cx]="node.x" 
+                    [attr.cy]="node.y" 
+                    r="20"
+                    class="graph-node"
+                    [class.visited]="visitedNodes.includes(node.id)"
+                    [class.current]="currentNode === node.id" />
+                  <text 
+                    [attr.x]="node.x" 
+                    [attr.y]="node.y + 5" 
+                    class="node-label">
+                    {{ node.id }}
+                  </text>
+                }
+              </svg>
+            </div>
+          </div>
+
+          <div class="coin-visualization" *ngIf="selectedAlgorithm === 'coin-change'">
+            <div class="target-amount">
+              <h3>目標金額: {{ targetAmount }}円</h3>
+            </div>
+            <div class="coin-result">
+              @for (result of coinChangeResult; track result.coin) {
+                <div class="coin-item">
+                  <div class="coin-icon">{{ result.coin }}円</div>
+                  <div class="coin-count">× {{ result.count }}</div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="knapsack-visualization" *ngIf="selectedAlgorithm === 'knapsack'">
+            <div class="knapsack-info">
+              <h3>ナップサック容量: {{ dpCapacity }}kg</h3>
+            </div>
+            <div class="items-display">
+              @for (item of dpItems; track $index) {
+                <div class="knapsack-item">
+                  <span class="item-name">{{ item.name }}</span>
+                  <span class="item-details">重量: {{ item.weight }}kg, 価値: {{ item.value }}</span>
+                </div>
+              }
+            </div>
+            <div class="dp-table" *ngIf="dpTable.length > 0">
+              <table>
+                <thead>
+                  <tr>
+                    <th>品物＼容量</th>
+                    @for (w of getRange(dpCapacity + 1); track w) {
+                      <th>{{ w }}</th>
+                    }
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of dpTable; track $index) {
+                    <tr>
+                      <th>{{ $index === 0 ? '0' : dpItems[$index - 1].name }}</th>
+                      @for (cell of row; track $index) {
+                        <td class="dp-cell">{{ cell }}</td>
+                      }
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="lcs-visualization" *ngIf="selectedAlgorithm === 'lcs'">
+            <div class="lcs-strings">
+              <div class="string-display">
+                <h4>文字列1: {{ lcsStrings.str1 }}</h4>
+                <h4>文字列2: {{ lcsStrings.str2 }}</h4>
+              </div>
+            </div>
+            <div class="lcs-table" *ngIf="lcsTable.length > 0">
+              <table>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    @for (char of lcsStrings.str2.split(''); track $index) {
+                      <th>{{ char }}</th>
+                    }
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of lcsTable; track $index) {
+                    <tr>
+                      <th *ngIf="$index === 0"></th>
+                      <th *ngIf="$index > 0">{{ lcsStrings.str1[$index - 1] }}</th>
+                      @for (cell of row; track $index) {
+                        <td [class.highlight]="highlightedIndices.includes($index - 1)">
+                          {{ cell || '' }}
+                        </td>
+                      }
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="welcome-message">
+          <h2>アルゴリズムを選択してください</h2>
+          <p>左のメニューからアルゴリズムを選んで、可視化を始めましょう！</p>
+        </div>
+      }
+    </section>
+  </main>
+</div>
+
+<router-outlet />
