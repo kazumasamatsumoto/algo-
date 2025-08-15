@@ -114,6 +114,18 @@ export class AlgorithmInfoService {
       timeComplexity: 'O(mn)',
       spaceComplexity: 'O(mn)',
       description: '2つの文字列間で共通する最も長い部分列を見つける動的プログラミング手法。'
+    },
+    'euclidean-gcd': {
+      name: 'ユークリッドの互除法',
+      timeComplexity: 'O(log min(a,b))',
+      spaceComplexity: 'O(1)',
+      description: '2つの整数の最大公約数を効率的に求める古代ギリシャのアルゴリズム。'
+    },
+    'sieve-of-eratosthenes': {
+      name: 'エラトステネスの篩',
+      timeComplexity: 'O(n log log n)',
+      spaceComplexity: 'O(n)',
+      description: '指定した範囲内の全ての素数を効率的に見つける古典アルゴリズム。'
     }
   };
 
@@ -138,10 +150,14 @@ export class AlgorithmInfoService {
   }
 
   isDynamicProgramming(type: AlgorithmType): boolean {
-    return ['fibonacci', 'knapsack', 'lcs'].includes(type);
+    return ['fibonacci', 'knapsack', 'lcs', 'floyd-warshall'].includes(type);
   }
 
   isGreedyAlgorithm(type: AlgorithmType): boolean {
     return ['coin-change'].includes(type);
+  }
+
+  isNumericalAlgorithm(type: AlgorithmType): boolean {
+    return ['euclidean-gcd', 'sieve-of-eratosthenes'].includes(type);
   }
 }

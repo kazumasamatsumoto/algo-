@@ -9,7 +9,9 @@
       "Bash(npm run:*)",
       "Bash(ng serve:*)",
       "Bash(ng build:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(taskkill:*)",
+      "Bash(wmic process where:*)"
     ],
     "deny": []
   }

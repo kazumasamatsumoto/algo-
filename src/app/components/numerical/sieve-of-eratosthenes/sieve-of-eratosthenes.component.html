@@ -1,0 +1,222 @@
+<div class="sieve-visualization">
+  <div class="problem-info">
+    <h4>🔍 エラトステネスの篩</h4>
+    <div class="range-info">
+      <span>範囲: 2 〜 {{ maxNumber }}</span>
+    </div>
+    <div class="result-summary">{{ getResultText() }}</div>
+  </div>
+
+  <!-- 現在のステップ表示 -->
+  @if (currentStep) {
+    <div class="current-step">
+      <strong>現在のステップ:</strong> {{ currentStep }}
+    </div>
+  }
+
+  <div class="main-content">
+    <!-- 数値グリッド -->
+    <div class="numbers-section">
+      <h4>🔢 数値グリッド</h4>
+      <div 
+        class="numbers-grid" 
+        [style.grid-template-columns]="'repeat(' + getGridColumns() + ', 1fr)'">
+        @for (number of numbers; track number.value) {
+          <div 
+            [class]="getCellClass(number)"
+            [title]="getNumberInfo(number)">
+            {{ number.value }}
+            @if (number.isMarked && number.markedBy > 0) {
+              <div class="marked-by">{{ number.markedBy }}</div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- 素数リストと統計 -->
+    <div class="info-section">
+      <!-- 見つかった素数 -->
+      <div class="primes-list">
+        <h4>✨ 見つかった素数</h4>
+        <div class="primes-container">
+          @if (primes.length > 0) {
+            <div class="primes-grid">
+              @for (prime of primes; track prime) {
+                <span 
+                  class="prime-number"
+                  [class.current]="prime === currentPrime">
+                  {{ prime }}
+                </span>
+              }
+            </div>
+          } @else {
+            <div class="no-primes">まだ素数が見つかっていません</div>
+          }
+        </div>
+      </div>
+
+      <!-- 統計情報 -->
+      @if (isComplete) {
+        <div class="statistics">
+          <h4>📊 統計情報</h4>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-label">総素数</div>
+              <div class="stat-value">{{ primes.length }}個</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">素数密度</div>
+              <div class="stat-value">{{ Math.round(getPrimeDensity() * 10) / 10 }}%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">最大ギャップ</div>
+              <div class="stat-value">{{ getLargestPrimeGap() }}</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">マーク数</div>
+              <div class="stat-value">{{ multiplesMarked }}個</div>
+            </div>
+          </div>
+
+          <!-- 双子素数 -->
+          @if (getTwinPrimes().length > 0) {
+            <div class="twin-primes">
+              <h5>👯 双子素数</h5>
+              <div class="twin-pairs">
+                @for (twin of getTwinPrimes(); track $index) {
+                  <span class="twin-pair">({{ twin[0] }}, {{ twin[1] }})</span>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- 素数ギャップ -->
+          <div class="prime-gaps">
+            <h5>📏 素数間のギャップ</h5>
+            <div class="gaps-container">
+              @for (gap of getPrimeGaps(); track $index) {
+                <span class="gap-value" [class.large-gap]="gap >= 4">{{ gap }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- 素数の性質分析 -->
+  @if (isComplete && primes.length > 0) {
+    <div class="analysis-section">
+      <h4>🔬 素数の性質分析</h4>
+      <div class="analysis-grid">
+        <!-- 奇数・偶数の分布 -->
+        <div class="analysis-item">
+          <h5>奇偶性の分布</h5>
+          <div class="distribution">
+            <div class="dist-item">
+              <span class="dist-label">偶数素数:</span>
+              <span class="dist-value">{{ getEvenPrimesCount() }}個</span>
+            </div>
+            <div class="dist-item">
+              <span class="dist-label">奇数素数:</span>
+              <span class="dist-value">{{ getOddPrimesCount() }}個</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 末尾の桁の分布 -->
+        <div class="analysis-item">
+          <h5>末尾桁の分布</h5>
+          <div class="digit-distribution">
+            @for (digit of [1, 3, 7, 9]; track digit) {
+              <div class="digit-item">
+                <span class="digit-label">{{ digit }}:</span>
+                <span class="digit-count">{{ getPrimesEndingWith(digit) }}個</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- 完全平方数付近の素数 -->
+        <div class="analysis-item">
+          <h5>完全平方数付近</h5>
+          <div class="perfect-squares">
+            @for (prime of getPerfectSquareAdjacentPrimes(); track prime) {
+              <span class="special-prime">{{ prime }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- アルゴリズム説明 -->
+  <div class="algorithm-info">
+    <h4>📚 アルゴリズムについて</h4>
+    <div class="info-content">
+      <div class="algorithm-steps">
+        <h5>エラトステネスの篩の手順</h5>
+        <ol>
+          <li>2からnまでの数をリストアップ</li>
+          <li>最小の素数(2)から始める</li>
+          <li>その素数の倍数を全て除外</li>
+          <li>次の未除外の数を素数とする</li>
+          <li>√nまで繰り返す</li>
+          <li>残った数が全て素数</li>
+        </ol>
+        
+        <div class="optimization-note">
+          <strong>最適化:</strong> i²からi×nまでをマークすれば十分です。
+          i²未満の倍数は既に小さい素数によってマークされているためです。
+        </div>
+      </div>
+
+      <div class="complexity-analysis">
+        <h5>計算量解析</h5>
+        <div class="complexity-items">
+          <div class="complexity-item">
+            <span class="label">時間計算量:</span>
+            <span class="value">O(n log log n)</span>
+          </div>
+          <div class="complexity-item">
+            <span class="label">空間計算量:</span>
+            <span class="value">O(n)</span>
+          </div>
+          <div class="complexity-item">
+            <span class="label">適用範囲:</span>
+            <span class="value">nまでの全素数</span>
+          </div>
+          <div class="complexity-item">
+            <span class="label">発明者:</span>
+            <span class="value">エラトステネス (古代ギリシャ)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 凡例 -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color current-prime"></div>
+      <span>現在処理中の素数</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color prime"></div>
+      <span>見つかった素数</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color current-multiple"></div>
+      <span>現在マーク中の倍数</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color marked"></div>
+      <span>除外された合成数</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color not-prime"></div>
+      <span>1 (素数ではない)</span>
+    </div>
+  </div>
+</div>

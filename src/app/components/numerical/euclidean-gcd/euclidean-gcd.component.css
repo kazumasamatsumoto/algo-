@@ -1,0 +1,505 @@
+.euclidean-gcd-visualization {
+  width: 100%;
+  padding: 1rem;
+}
+
+.problem-info {
+  background: #f7fafc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 2px solid #e2e8f0;
+  text-align: center;
+}
+
+.problem-info h4 {
+  margin: 0 0 1rem 0;
+  color: #2d3748;
+  font-size: 1.3rem;
+}
+
+.numbers-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.number-label {
+  color: #4a5568;
+  font-weight: bold;
+}
+
+.number-value {
+  color: #2d3748;
+  font-size: 1.5rem;
+  font-weight: bold;
+  background: #edf2f7;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 2px solid #cbd5e0;
+}
+
+.result-summary {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #4a5568;
+}
+
+/* モード選択 */
+.mode-selection {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.mode-btn {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #cbd5e0;
+  background: white;
+  color: #4a5568;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.mode-btn:hover:not(:disabled) {
+  border-color: #9f7aea;
+  background: #f7fafc;
+}
+
+.mode-btn.active {
+  background: #9f7aea;
+  color: white;
+  border-color: #805ad5;
+}
+
+.mode-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.current-operation {
+  background: #fef5e7;
+  border: 2px solid #f6ad55;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #744210;
+  font-size: 1rem;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* 視覚的表現セクション */
+.visual-section {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+}
+
+.visual-section h4 {
+  margin: 0 0 1rem 0;
+  color: #2d3748;
+}
+
+.number-visualization {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9ff;
+  border-radius: 6px;
+  border: 1px solid #e0e8ff;
+}
+
+.gcd-visualization {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f0fff4;
+  border-radius: 6px;
+  border: 2px solid #9ae6b4;
+}
+
+.number-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.number-title {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #2d3748;
+}
+
+.number-title.gcd-title {
+  color: #22543d;
+}
+
+.prime-factors {
+  font-size: 0.9rem;
+  color: #718096;
+  font-family: monospace;
+}
+
+.blocks-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  max-height: 120px;
+  overflow: hidden;
+}
+
+.number-block {
+  width: 8px;
+  height: 8px;
+  background: #cbd5e0;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.number-block.gcd-part {
+  background: #48bb78;
+  animation: gcdGlow 2s ease-in-out infinite alternate;
+}
+
+.number-block.remainder-part {
+  background: #ed8936;
+}
+
+.number-block.gcd-block {
+  background: #22543d;
+  width: 10px;
+  height: 10px;
+}
+
+@keyframes gcdGlow {
+  from { background: #48bb78; }
+  to { background: #38a169; }
+}
+
+/* ステップセクション */
+.steps-section {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+}
+
+.steps-section h4 {
+  margin: 0 0 1rem 0;
+  color: #2d3748;
+}
+
+.steps-container {
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.step-item {
+  padding: 1rem;
+  background: #f8f9ff;
+  border: 2px solid #e0e8ff;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.step-item.current {
+  background: #fef5e7;
+  border-color: #f6ad55;
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(246, 173, 85, 0.3);
+}
+
+.step-item.completed {
+  background: #f0fff4;
+  border-color: #9ae6b4;
+}
+
+.step-number {
+  font-weight: bold;
+  color: #553c9a;
+  margin-bottom: 0.5rem;
+}
+
+.step-equation {
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.step-details {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+.step-conclusion {
+  background: #c6f6d5;
+  color: #22543d;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* 拡張版ステップ */
+.extended-steps-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.extended-header {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #edf2f7;
+  border-radius: 6px 6px 0 0;
+  font-weight: bold;
+  color: #2d3748;
+  text-align: center;
+  border: 2px solid #cbd5e0;
+  border-bottom: 1px solid #cbd5e0;
+}
+
+.extended-step {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: white;
+  border: 1px solid #cbd5e0;
+  border-top: none;
+  transition: all 0.3s ease;
+}
+
+.extended-step:last-child {
+  border-radius: 0 0 6px 6px;
+}
+
+.extended-step.current {
+  background: #fef5e7;
+  border-color: #f6ad55;
+  font-weight: bold;
+}
+
+.step-value {
+  text-align: center;
+  font-family: monospace;
+  color: #2d3748;
+}
+
+/* 結果セクション */
+.result-section {
+  background: #f0fff4;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid #9ae6b4;
+  margin-bottom: 1.5rem;
+}
+
+.result-section h4 {
+  margin: 0 0 1rem 0;
+  color: #22543d;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat-item {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+  border: 1px solid #9ae6b4;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #22543d;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #22543d;
+  font-family: monospace;
+}
+
+.additional-info {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #9ae6b4;
+}
+
+.info-item {
+  margin-bottom: 0.5rem;
+  font-family: monospace;
+  color: #2d3748;
+}
+
+/* アルゴリズム情報 */
+.algorithm-info {
+  background: #edf2f7;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid #cbd5e0;
+  margin-bottom: 1.5rem;
+}
+
+.algorithm-info h4 {
+  margin: 0 0 1rem 0;
+  color: #2d3748;
+}
+
+.info-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.basic-info h5 {
+  color: #2d3748;
+  margin: 0.75rem 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.basic-info p {
+  color: #4a5568;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.basic-info ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+  color: #4a5568;
+}
+
+.basic-info li {
+  margin-bottom: 0.25rem;
+}
+
+.complexity-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.complexity-item {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.complexity-item .label {
+  color: #4a5568;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.complexity-item .value {
+  color: #2d3748;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+/* 凡例 */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #4a5568;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid #cbd5e0;
+}
+
+.legend-color.current {
+  background: #f6ad55;
+}
+
+.legend-color.completed {
+  background: #9ae6b4;
+}
+
+.legend-color.gcd {
+  background: #48bb78;
+}
+
+.legend-color.remainder {
+  background: #ed8936;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 1024px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .numbers-display {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .legend {
+    gap: 1rem;
+  }
+  
+  .mode-selection {
+    flex-direction: column;
+    align-items: center;
+  }
+}

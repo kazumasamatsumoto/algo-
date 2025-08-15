@@ -1,4 +1,4 @@
-export type AlgorithmType = 'bubble-sort' | 'quick-sort' | 'merge-sort' | 'selection-sort' | 'heap-sort' | 'insertion-sort' | 'linear-search' | 'binary-search' | 'fibonacci' | 'dijkstra' | 'dfs' | 'bfs' | 'floyd-warshall' | 'kruskal' | 'coin-change' | 'knapsack' | 'a-star' | 'lcs';
+export type AlgorithmType = 'bubble-sort' | 'quick-sort' | 'merge-sort' | 'selection-sort' | 'heap-sort' | 'insertion-sort' | 'linear-search' | 'binary-search' | 'fibonacci' | 'dijkstra' | 'dfs' | 'bfs' | 'floyd-warshall' | 'kruskal' | 'coin-change' | 'knapsack' | 'a-star' | 'lcs' | 'euclidean-gcd' | 'sieve-of-eratosthenes';
 
 export interface AlgorithmSettings {
   arraySize: number;

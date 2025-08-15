@@ -1,0 +1,164 @@
+<div class="floyd-warshall-visualization">
+  <div class="problem-info">
+    <h4>🌐 フロイド・ワーシャル法 (全点対間最短経路)</h4>
+    <div class="result-summary">{{ getResultText() }}</div>
+  </div>
+
+  <!-- 現在の操作表示 -->
+  @if (getCurrentOperationText()) {
+    <div class="current-operation">
+      <strong>現在の比較:</strong> {{ getCurrentOperationText() }}
+    </div>
+  }
+
+  <div class="main-content">
+    <!-- グラフ表示 -->
+    <div class="graph-section">
+      <h4>🔗 グラフ構造</h4>
+      <svg width="300" height="250" class="graph-svg">
+        <!-- エッジを描画 -->
+        @for (edge of graph.edges; track edge) {
+          <line
+            [attr.x1]="getNodeX(edge.from)"
+            [attr.y1]="getNodeY(edge.from)"
+            [attr.x2]="getNodeX(edge.to)"
+            [attr.y2]="getNodeY(edge.to)"
+            [class]="getEdgeClass(edge.from, edge.to)"
+          />
+          <!-- エッジの重み表示 -->
+          <text
+            [attr.x]="(getNodeX(edge.from) + getNodeX(edge.to)) / 2"
+            [attr.y]="(getNodeY(edge.from) + getNodeY(edge.to)) / 2"
+            class="edge-weight">
+            {{ edge.weight }}
+          </text>
+        }
+
+        <!-- ノードを描画 -->
+        @for (node of graph.nodes; track node.id) {
+          <g class="node-group">
+            <circle
+              [attr.cx]="node.x"
+              [attr.cy]="node.y"
+              r="18"
+              [class]="getNodeClass(node.id)"
+            />
+            <text
+              [attr.x]="node.x"
+              [attr.y]="node.y + 5"
+              class="node-id">
+              {{ node.id }}
+            </text>
+          </g>
+        }
+      </svg>
+
+      @if (currentK >= 0) {
+        <div class="current-intermediate">
+          <span class="intermediate-label">中間ノード:</span>
+          <span class="intermediate-value">{{ currentK }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- 距離行列 -->
+    <div class="matrix-section">
+      <h4>📊 距離行列</h4>
+      <div class="matrix-container">
+        <table class="distance-matrix">
+          <thead>
+            <tr>
+              <th class="corner-cell">From\\To</th>
+              @for (node of graph.nodes; track node.id) {
+                <th class="node-header">{{ node.id }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of distanceMatrix; track rowIndex; let rowIndex = $index) {
+              <tr>
+                <td class="row-header">{{ rowIndex }}</td>
+                @for (cell of row; track colIndex; let colIndex = $index) {
+                  <td 
+                    [class]="getCellClass(rowIndex, colIndex)"
+                    (click)="selectPath(rowIndex, colIndex)">
+                    {{ formatDistance(cell) }}
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 最短経路リスト -->
+  @if (isComplete && shortestPaths.length > 0) {
+    <div class="paths-section">
+      <h4>🛤️ 全ての最短経路</h4>
+      <div class="paths-grid">
+        @for (pathInfo of shortestPaths; track $index) {
+          <div 
+            class="path-item"
+            [class.selected]="selectedPath?.from === pathInfo.from && selectedPath?.to === pathInfo.to"
+            (click)="selectPath(pathInfo.from, pathInfo.to)">
+            <div class="path-header">
+              <span class="path-nodes">{{ pathInfo.from }} → {{ pathInfo.to }}</span>
+              <span class="path-distance">距離: {{ pathInfo.distance }}</span>
+            </div>
+            <div class="path-route">
+              経路: {{ pathInfo.path.join(' → ') }}
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- アルゴリズム説明 -->
+  <div class="algorithm-info">
+    <h4>📚 アルゴリズムについて</h4>
+    <div class="info-content">
+      <div class="step-info">
+        <strong>フロイド・ワーシャル法の手順:</strong>
+        <ol>
+          <li>各ノードから各ノードへの初期距離を設定</li>
+          <li>各ノードを中間ノードとして順番に考慮</li>
+          <li>中間ノードを経由する経路の方が短い場合、距離を更新</li>
+          <li>全てのノードペアについて最短距離を計算</li>
+        </ol>
+      </div>
+      <div class="complexity-info">
+        <div class="complexity-item">
+          <span class="label">時間計算量:</span>
+          <span class="value">O(V³)</span>
+        </div>
+        <div class="complexity-item">
+          <span class="label">空間計算量:</span>
+          <span class="value">O(V²)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 凡例 -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color current"></div>
+      <span>現在比較中</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color involved"></div>
+      <span>計算に関与</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color intermediate"></div>
+      <span>中間ノード</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color selected"></div>
+      <span>選択された経路</span>
+    </div>
+  </div>
+</div>

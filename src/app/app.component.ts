@@ -36,6 +36,11 @@ import { CoinChangeComponent } from './components/greedy/coin-change/coin-change
 
 // Additional Graph Components
 import { KruskalComponent } from './components/graph/kruskal/kruskal.component';
+import { FloydWarshallComponent } from './components/graph/floyd-warshall/floyd-warshall.component';
+
+// Numerical Components
+import { EuclideanGcdComponent } from './components/numerical/euclidean-gcd/euclidean-gcd.component';
+import { SieveOfEratosthenesComponent } from './components/numerical/sieve-of-eratosthenes/sieve-of-eratosthenes.component';
 
 @Component({
   selector: 'app-root',
@@ -74,11 +79,13 @@ export class App implements OnInit, OnDestroy {
   
   searchAlgorithms: AlgorithmType[] = ['linear-search', 'binary-search'];
   
-  graphAlgorithms: AlgorithmType[] = ['dijkstra', 'dfs', 'bfs', 'kruskal'];
+  graphAlgorithms: AlgorithmType[] = ['dijkstra', 'dfs', 'bfs', 'kruskal', 'floyd-warshall'];
   
   dynamicProgramming: AlgorithmType[] = ['fibonacci', 'knapsack', 'lcs'];
   
   greedyAlgorithms: AlgorithmType[] = ['coin-change'];
+  
+  numericalAlgorithms: AlgorithmType[] = ['euclidean-gcd', 'sieve-of-eratosthenes'];
 
   // コンポーネントマッピング
   private componentMap = new Map<string, any>([
@@ -97,7 +104,10 @@ export class App implements OnInit, OnDestroy {
     ['knapsack', KnapsackComponent],
     ['lcs', LcsComponent],
     ['coin-change', CoinChangeComponent],
-    ['kruskal', KruskalComponent]
+    ['kruskal', KruskalComponent],
+    ['floyd-warshall', FloydWarshallComponent],
+    ['euclidean-gcd', EuclideanGcdComponent],
+    ['sieve-of-eratosthenes', SieveOfEratosthenesComponent]
   ]);
 
   constructor(
@@ -233,6 +243,7 @@ export class App implements OnInit, OnDestroy {
     if (algorithms === this.graphAlgorithms) return 'グラフアルゴリズム';
     if (algorithms === this.dynamicProgramming) return '動的プログラミング';
     if (algorithms === this.greedyAlgorithms) return '貪欲法';
+    if (algorithms === this.numericalAlgorithms) return '数値計算';
     return '';
   }
 

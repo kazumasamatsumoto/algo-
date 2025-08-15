@@ -1,0 +1,243 @@
+<div class="euclidean-gcd-visualization">
+  <div class="problem-info">
+    <h4>🔢 ユークリッドの互除法</h4>
+    <div class="numbers-display">
+      <span class="number-label">数値A:</span>
+      <span class="number-value">{{ originalA }}</span>
+      <span class="number-label">数値B:</span>
+      <span class="number-value">{{ originalB }}</span>
+    </div>
+    <div class="result-summary">{{ getResultText() }}</div>
+  </div>
+
+  <!-- モード選択 -->
+  <div class="mode-selection">
+    <button 
+      class="mode-btn"
+      [class.active]="!extendedMode"
+      [disabled]="isRunning"
+      (click)="toggleExtendedMode()">
+      基本版
+    </button>
+    <button 
+      class="mode-btn"
+      [class.active]="extendedMode"
+      [disabled]="isRunning"
+      (click)="toggleExtendedMode()">
+      拡張版
+    </button>
+  </div>
+
+  <!-- 現在の操作表示 -->
+  @if (getCurrentOperationText()) {
+    <div class="current-operation">
+      <strong>現在の計算:</strong> {{ getCurrentOperationText() }}
+    </div>
+  }
+
+  <div class="main-content">
+    <!-- 視覚的表現 -->
+    <div class="visual-section">
+      <h4>📊 数値の視覚化</h4>
+      
+      <!-- 数値Aの表現 -->
+      <div class="number-visualization">
+        <div class="number-header">
+          <span class="number-title">A = {{ originalA }}</span>
+          @if (isComplete && getPrimeFactors(originalA)) {
+            <span class="prime-factors">{{ getPrimeFactors(originalA) }}</span>
+          }
+        </div>
+        <div class="blocks-container">
+          @for (block of getNumberBlocks(originalA); track $index) {
+            <div [class]="getBlockClass(originalA, $index)"></div>
+          }
+        </div>
+      </div>
+
+      <!-- 数値Bの表現 -->
+      <div class="number-visualization">
+        <div class="number-header">
+          <span class="number-title">B = {{ originalB }}</span>
+          @if (isComplete && getPrimeFactors(originalB)) {
+            <span class="prime-factors">{{ getPrimeFactors(originalB) }}</span>
+          }
+        </div>
+        <div class="blocks-container">
+          @for (block of getNumberBlocks(originalB); track $index) {
+            <div [class]="getBlockClass(originalB, $index)"></div>
+          }
+        </div>
+      </div>
+
+      <!-- GCDの表現 -->
+      @if (isComplete) {
+        <div class="gcd-visualization">
+          <div class="number-header">
+            <span class="number-title gcd-title">GCD = {{ gcdResult }}</span>
+            @if (getPrimeFactors(gcdResult)) {
+              <span class="prime-factors">{{ getPrimeFactors(gcdResult) }}</span>
+            }
+          </div>
+          <div class="blocks-container">
+            @for (block of getNumberBlocks(gcdResult); track $index) {
+              <div class="number-block gcd-block"></div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ステップ表示 -->
+    <div class="steps-section">
+      <h4>📝 計算ステップ</h4>
+      
+      @if (!extendedMode) {
+        <!-- 基本版のステップ -->
+        <div class="steps-container">
+          @for (step of steps; track step.step) {
+            <div [class]="getStepClass(step.step)">
+              <div class="step-number">Step {{ step.step + 1 }}</div>
+              <div class="step-content">
+                <div class="step-equation">{{ step.operation }}</div>
+                <div class="step-details">
+                  <span>商: {{ step.quotient }}</span>
+                  <span>余り: {{ step.remainder }}</span>
+                </div>
+              </div>
+              @if (step.remainder === 0) {
+                <div class="step-conclusion">
+                  ✅ 余りが0になったので、GCD = {{ step.b }}
+                </div>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <!-- 拡張版のステップ -->
+        <div class="extended-steps-container">
+          <div class="extended-header">
+            <span>a</span>
+            <span>b</span>
+            <span>商(q)</span>
+            <span>x</span>
+            <span>y</span>
+          </div>
+          @for (step of extendedSteps; track $index) {
+            <div class="extended-step" [class.current]="currentStepIndex === $index">
+              <span class="step-value">{{ step.a }}</span>
+              <span class="step-value">{{ step.b }}</span>
+              <span class="step-value">{{ step.q || '-' }}</span>
+              <span class="step-value">{{ step.x }}</span>
+              <span class="step-value">{{ step.y }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- 結果統計 -->
+  @if (isComplete) {
+    <div class="result-section">
+      <h4>📈 結果統計</h4>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-label">最大公約数</div>
+          <div class="stat-value">{{ gcdResult }}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">最小公倍数</div>
+          <div class="stat-value">{{ getLcm() }}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">計算ステップ数</div>
+          <div class="stat-value">{{ steps.length }}</div>
+        </div>
+        @if (extendedMode) {
+          <div class="stat-item">
+            <div class="stat-label">ベズー係数</div>
+            <div class="stat-value">x={{ coefficients.x }}, y={{ coefficients.y }}</div>
+          </div>
+        }
+      </div>
+      
+      <div class="additional-info">
+        <div class="info-item">
+          <strong>検証:</strong> 
+          {{ originalA }} ÷ {{ gcdResult }} = {{ originalA / gcdResult }}, 
+          {{ originalB }} ÷ {{ gcdResult }} = {{ originalB / gcdResult }}
+        </div>
+        @if (extendedMode) {
+          <div class="info-item">
+            <strong>ベズーの等式:</strong>
+            {{ originalA }} × {{ coefficients.x }} + {{ originalB }} × {{ coefficients.y }} = {{ gcdResult }}
+          </div>
+          <div class="info-item">
+            <strong>検証:</strong>
+            {{ originalA * coefficients.x }} + {{ originalB * coefficients.y }} = {{ originalA * coefficients.x + originalB * coefficients.y }}
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- アルゴリズム説明 -->
+  <div class="algorithm-info">
+    <h4>📚 アルゴリズムについて</h4>
+    <div class="info-content">
+      <div class="basic-info">
+        <h5>ユークリッドの互除法とは</h5>
+        <p>2つの自然数の最大公約数を効率的に求める古代ギリシャのアルゴリズムです。</p>
+        
+        <h5>基本の手順</h5>
+        <ol>
+          <li>大きい数を小さい数で割る</li>
+          <li>余りを求める</li>
+          <li>小さい数と余りで同じ操作を繰り返す</li>
+          <li>余りが0になったときの除数がGCD</li>
+        </ol>
+
+        @if (extendedMode) {
+          <h5>拡張ユークリッド互除法</h5>
+          <p>GCDだけでなく、ベズーの等式 ax + by = gcd(a,b) の係数x, yも求めます。</p>
+        }
+      </div>
+      
+      <div class="complexity-info">
+        <div class="complexity-item">
+          <span class="label">時間計算量:</span>
+          <span class="value">O(log min(a,b))</span>
+        </div>
+        <div class="complexity-item">
+          <span class="label">空間計算量:</span>
+          <span class="value">O(1)</span>
+        </div>
+        <div class="complexity-item">
+          <span class="label">応用分野:</span>
+          <span class="value">暗号学、数論</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 凡例 -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color current"></div>
+      <span>現在のステップ</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color completed"></div>
+      <span>完了したステップ</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color gcd"></div>
+      <span>最大公約数部分</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color remainder"></div>
+      <span>余り部分</span>
+    </div>
+  </div>
+</div>
