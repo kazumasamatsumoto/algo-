@@ -1,0 +1,136 @@
+<div class="kruskal-visualization">
+  <div class="problem-info">
+    <h4>🌳 クラスカル法 (最小全域木)</h4>
+    <div class="result-summary">{{ getResultText() }}</div>
+  </div>
+
+  <!-- 現在のステップ表示 -->
+  @if (currentEdgeIndex >= 0) {
+    <div class="current-step">
+      <strong>現在のステップ:</strong> {{ getCurrentEdgeInfo() }}
+    </div>
+  }
+
+  <div class="main-content">
+    <!-- グラフ表示 -->
+    <div class="graph-section">
+      <h4>🔗 グラフと最小全域木</h4>
+      <svg width="400" height="350" class="graph-svg">
+        <!-- エッジを描画 -->
+        @for (edge of graph.edges; track edge) {
+          <line
+            [attr.x1]="getNodeX(edge.from)"
+            [attr.y1]="getNodeY(edge.from)"
+            [attr.x2]="getNodeX(edge.to)"
+            [attr.y2]="getNodeY(edge.to)"
+            [class]="getGraphEdgeClass(edge.from, edge.to)"
+          />
+          <!-- エッジの重み表示 -->
+          <text
+            [attr.x]="getEdgeMidX(edge)"
+            [attr.y]="getEdgeMidY(edge)"
+            class="edge-weight"
+            [class.mst-weight]="mstEdges.has(`${Math.min(edge.from, edge.to)}-${Math.max(edge.from, edge.to)}`)"
+            [class.current-weight]="currentEdgeIndex >= 0 && sortedEdges[currentEdgeIndex] && `${Math.min(edge.from, edge.to)}-${Math.max(edge.from, edge.to)}` === `${Math.min(sortedEdges[currentEdgeIndex].from, sortedEdges[currentEdgeIndex].to)}-${Math.max(sortedEdges[currentEdgeIndex].from, sortedEdges[currentEdgeIndex].to)}`">
+            {{ edge.weight }}
+          </text>
+        }
+
+        <!-- ノードを描画 -->
+        @for (node of graph.nodes; track node.id) {
+          <g class="node">
+            <circle
+              [attr.cx]="node.x"
+              [attr.cy]="node.y"
+              r="20"
+              [class]="getNodeClass(node.id)"
+            />
+            <text
+              [attr.x]="node.x"
+              [attr.y]="node.y + 5"
+              class="node-id"
+            >
+              {{ node.id }}
+            </text>
+          </g>
+        }
+      </svg>
+    </div>
+
+    <!-- エッジリストとアルゴリズムの進行 -->
+    <div class="edges-section">
+      <h4>📋 ソート済みエッジリスト</h4>
+      <div class="edges-container">
+        @for (edge of sortedEdges; track $index) {
+          <div class="edge-item" [class]="getEdgeClass(edge, $index)">
+            <div class="edge-info">
+              <span class="edge-nodes">{{ edge.from }} ↔ {{ edge.to }}</span>
+              <span class="edge-weight-text">重み: {{ edge.weight }}</span>
+            </div>
+            <div class="edge-status">
+              @if ($index === currentEdgeIndex) {
+                <span class="status-current">検討中</span>
+              } @else if (mstEdges.has(edge.id)) {
+                <span class="status-mst">MST追加</span>
+              } @else if (rejectedEdges.has(edge.id)) {
+                <span class="status-rejected">サイクル→拒否</span>
+              } @else if ($index < currentEdgeIndex || isComplete) {
+                <span class="status-processed">処理済み</span>
+              } @else {
+                <span class="status-pending">待機中</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- 結果統計 -->
+  @if (isComplete) {
+    <div class="result-section">
+      <h4>📊 最小全域木の統計</h4>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-label">総重み</div>
+          <div class="stat-value">{{ totalWeight }}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">MST エッジ数</div>
+          <div class="stat-value">{{ mstEdges.size }}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">拒否エッジ数</div>
+          <div class="stat-value">{{ rejectedEdges.size }}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">アルゴリズム</div>
+          <div class="stat-value">クラスカル法</div>
+        </div>
+      </div>
+      
+      <div class="success-message">
+        ✅ 最小全域木が完成しました！全てのノードが最小コストで接続されています。
+      </div>
+    </div>
+  }
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color current"></div>
+      <span>現在検討中</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color mst"></div>
+      <span>最小全域木のエッジ</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color rejected"></div>
+      <span>拒否されたエッジ</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color processed"></div>
+      <span>処理済み</span>
+    </div>
+  </div>
+</div>

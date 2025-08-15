@@ -1,0 +1,372 @@
+.lcs-visualization {
+  width: 100%;
+  padding: 1rem;
+}
+
+.problem-info {
+  background: #f7fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 2px solid #e2e8f0;
+  text-align: center;
+}
+
+.problem-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: #2d3748;
+  font-size: 1.3rem;
+}
+
+.result-summary {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+}
+
+.similarity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.similarity-bar {
+  width: 200px;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.similarity-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  transition: width 0.5s ease;
+}
+
+/* 文字列セクション */
+.strings-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+}
+
+.string-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.string-label {
+  font-weight: bold;
+  color: #2d3748;
+  min-width: 80px;
+  font-size: 1rem;
+}
+
+.string-display {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.string-char {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+  background: #f8f9ff;
+  border: 2px solid #e0e8ff;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  font-family: monospace;
+  color: #2d3748;
+  transition: all 0.3s ease;
+  min-width: 20px;
+  text-align: center;
+}
+
+.string-char.highlighted {
+  background: #c6f6d5;
+  border-color: #48bb78;
+  color: #22543d;
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(72, 187, 120, 0.3);
+}
+
+.string-char.comparing {
+  background: #fbb6ce;
+  border-color: #ed64a6;
+  color: #702459;
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+
+.current-comparison {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #fef5e7;
+  border: 1px solid #f6ad55;
+  border-radius: 4px;
+  color: #744210;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* DPテーブルセクション */
+.dp-table-section {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+}
+
+.dp-table-section h4 {
+  margin: 0 0 1rem 0;
+  color: #2d3748;
+}
+
+.table-container {
+  overflow: auto;
+  max-height: 400px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+.dp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.dp-table th,
+.dp-table td {
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem;
+  text-align: center;
+  min-width: 40px;
+}
+
+.dp-table th {
+  background: #f7fafc;
+  font-weight: bold;
+  color: #2d3748;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.corner-cell,
+.char-header {
+  background: #edf2f7 !important;
+  font-weight: bold;
+  color: #2d3748;
+  font-family: monospace;
+  font-size: 1rem;
+}
+
+.row-header {
+  background: #edf2f7 !important;
+  font-weight: bold;
+  color: #2d3748;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  font-family: monospace;
+  font-size: 1rem;
+}
+
+.corner-cell {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+}
+
+.dp-cell {
+  background: #f8f9ff;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  color: #2d3748;
+}
+
+.dp-cell.current {
+  background: #ed8936;
+  color: white;
+  transform: scale(1.1);
+  animation: cellPulse 1s ease-in-out infinite alternate;
+  z-index: 1;
+  position: relative;
+}
+
+.dp-cell.computed {
+  background: #bee3f8;
+  color: #2d3748;
+}
+
+.dp-cell.backtrack {
+  background: #9f7aea;
+  color: white;
+  font-weight: bold;
+  box-shadow: inset 0 0 0 2px #805ad5;
+}
+
+@keyframes cellPulse {
+  from { transform: scale(1.1); }
+  to { transform: scale(1.2); }
+}
+
+/* 結果セクション */
+.result-section {
+  background: #f0fff4;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid #9ae6b4;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.result-section h4 {
+  margin: 0 0 1rem 0;
+  color: #22543d;
+}
+
+.lcs-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lcs-string {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.lcs-char {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  background: #48bb78;
+  color: white;
+  border-radius: 8px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  font-family: monospace;
+  box-shadow: 0 4px 8px rgba(72, 187, 120, 0.3);
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.lcs-stats {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.9rem;
+  color: #22543d;
+  font-weight: bold;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.lcs-stats span {
+  background: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  border: 1px solid #9ae6b4;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #4a5568;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid #cbd5e0;
+}
+
+.legend-color.current {
+  background: #ed8936;
+}
+
+.legend-color.computed {
+  background: #bee3f8;
+}
+
+.legend-color.backtrack {
+  background: #9f7aea;
+}
+
+.legend-color.highlighted {
+  background: #c6f6d5;
+  border-color: #48bb78;
+}
+
+.legend-color.comparing {
+  background: #fbb6ce;
+  border-color: #ed64a6;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .string-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .string-display {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  
+  .string-char {
+    padding: 0.4rem 0.6rem;
+    font-size: 1rem;
+  }
+  
+  .similarity {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .similarity-bar {
+    width: 150px;
+  }
+  
+  .lcs-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

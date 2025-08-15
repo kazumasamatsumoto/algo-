@@ -48,7 +48,7 @@
       </div>
 
       <!-- アルゴリズム選択 -->
-      @for (algorithms of [sortingAlgorithms, searchAlgorithms, graphAlgorithms, dynamicProgramming]; track algorithms) {
+      @for (algorithms of [sortingAlgorithms, searchAlgorithms, graphAlgorithms, dynamicProgramming, greedyAlgorithms]; track algorithms) {
         <div class="algorithm-category">
           <h3>{{ getCategoryName(algorithms) }}</h3>
           <div class="algorithm-grid">

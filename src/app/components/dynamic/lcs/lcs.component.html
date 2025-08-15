@@ -1,0 +1,122 @@
+<div class="lcs-visualization">
+  <div class="problem-info">
+    <h4>🔤 最長共通部分列 (LCS)</h4>
+    <div class="result-summary">{{ getResultText() }}</div>
+    @if (isComplete) {
+      <div class="similarity">
+        <div class="similarity-bar">
+          <div class="similarity-fill" [style.width.%]="getSimilarityPercentage()"></div>
+        </div>
+        <span>類似度: {{ getSimilarityPercentage() }}%</span>
+      </div>
+    }
+  </div>
+
+  <!-- 文字列の表示 -->
+  <div class="strings-section">
+    <div class="string-container">
+      <div class="string-label">文字列1:</div>
+      <div class="string-display">
+        @for (char of string1.split(''); track $index) {
+          <span [class]="getCharClass(1, $index)">{{ char }}</span>
+        }
+      </div>
+    </div>
+    
+    <div class="string-container">
+      <div class="string-label">文字列2:</div>
+      <div class="string-display">
+        @for (char of string2.split(''); track $index) {
+          <span [class]="getCharClass(2, $index)">{{ char }}</span>
+        }
+      </div>
+    </div>
+
+    @if (currentRow > 0 && currentCol > 0) {
+      <div class="current-comparison">
+        <strong>現在の比較:</strong> {{ getCurrentComparisonText() }}
+      </div>
+    }
+  </div>
+
+  <!-- DPテーブル -->
+  <div class="dp-table-section">
+    <h4>📊 動的プログラミングテーブル</h4>
+    <div class="table-container">
+      <table class="dp-table">
+        <thead>
+          <tr>
+            <th class="corner-cell"></th>
+            <th class="char-header">ε</th>
+            @for (char of string2.split(''); track $index) {
+              <th class="char-header">{{ char }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of dpTable; track rowIndex; let rowIndex = $index) {
+            <tr>
+              <td class="row-header">
+                @if (rowIndex === 0) {
+                  ε
+                } @else {
+                  {{ string1[rowIndex - 1] }}
+                }
+              </td>
+              @for (cell of row; track colIndex; let colIndex = $index) {
+                <td 
+                  [class]="getDPCellClass(rowIndex, colIndex)"
+                  [attr.data-row]="rowIndex"
+                  [attr.data-col]="colIndex">
+                  {{ cell }}
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 結果表示 -->
+  @if (isComplete && lcsResult) {
+    <div class="result-section">
+      <h4>🎯 最長共通部分列</h4>
+      <div class="lcs-result">
+        <div class="lcs-string">
+          @for (char of lcsResult.split(''); track $index) {
+            <span class="lcs-char">{{ char }}</span>
+          }
+        </div>
+        <div class="lcs-stats">
+          <span>長さ: {{ lcsLength }}</span>
+          <span>文字列1との一致率: {{ Math.round((lcsLength / string1.length) * 100) }}%</span>
+          <span>文字列2との一致率: {{ Math.round((lcsLength / string2.length) * 100) }}%</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color current"></div>
+      <span>現在計算中</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color computed"></div>
+      <span>計算完了</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color backtrack"></div>
+      <span>バックトラック経路</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color highlighted"></div>
+      <span>LCSに含まれる文字</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color comparing"></div>
+      <span>比較中の文字</span>
+    </div>
+  </div>
+</div>

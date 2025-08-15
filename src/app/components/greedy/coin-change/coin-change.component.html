@@ -1,0 +1,125 @@
+<div class="coin-change-visualization">
+  <div class="problem-info">
+    <h4>💰 硬貨問題 (貪欲法)</h4>
+    <div class="target-amount">支払金額: {{ targetAmount }}円</div>
+    <div class="result-summary">{{ getResultText() }}</div>
+  </div>
+
+  <!-- 現在のステップ表示 -->
+  @if (currentCoinIndex >= 0) {
+    <div class="current-step">
+      <strong>現在のステップ:</strong> {{ getCurrentStepText() }}
+    </div>
+  }
+
+  <!-- 硬貨の表示 -->
+  <div class="coins-section">
+    <h4>🪙 利用可能な硬貨</h4>
+    <div class="coins-grid">
+      @for (coin of coins; track $index) {
+        <div class="coin-container" [class]="getCoinClass($index)">
+          <div class="coin-visual" 
+               [style.width.px]="getCoinSize(coin.value)"
+               [style.height.px]="getCoinSize(coin.value)"
+               [style.background-color]="getCoinColor(coin.value)">
+            <span class="coin-value">{{ coin.value }}</span>
+          </div>
+          
+          <div class="coin-info">
+            <div class="coin-label">{{ getCoinValueText(coin) }}</div>
+            
+            @if (coin.used > 0) {
+              <div class="usage-info">
+                <span class="used-count">{{ coin.used }}枚使用</span>
+                <div class="used-coins">
+                  @for (i of [].constructor(Math.min(coin.used, 5)); track $index) {
+                    <div class="mini-coin" 
+                         [style.background-color]="getCoinColor(coin.value)">
+                      {{ coin.value }}
+                    </div>
+                  }
+                  @if (coin.used > 5) {
+                    <span class="more-coins">+{{ coin.used - 5 }}</span>
+                  }
+                </div>
+              </div>
+            } @else if (currentCoinIndex === $index) {
+              <div class="calculating">計算中...</div>
+            } @else if ($index < currentCoinIndex || isComplete) {
+              <div class="not-used">使用せず</div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- 計算過程の表示 -->
+  @if (steps.length > 0) {
+    <div class="steps-section">
+      <h4>📋 計算ステップ</h4>
+      <div class="steps-list">
+        @for (step of steps; track $index) {
+          <div class="step-item">
+            <span class="step-number">{{ $index + 1 }}.</span>
+            <span class="step-text">{{ step }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- 結果統計 -->
+  @if (isComplete) {
+    <div class="result-section">
+      <h4>📊 結果統計</h4>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-label">合計硬貨数</div>
+          <div class="stat-value">{{ totalCoinsUsed }}枚</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">支払完了</div>
+          <div class="stat-value">{{ remainingAmount === 0 ? 'はい' : 'いいえ' }}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">残金</div>
+          <div class="stat-value">{{ remainingAmount }}円</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">アルゴリズム</div>
+          <div class="stat-value">貪欲法</div>
+        </div>
+      </div>
+      
+      @if (remainingAmount === 0) {
+        <div class="success-message">
+          ✅ 最適解！貪欲法で最少枚数での支払いが完了しました。
+        </div>
+      }
+    </div>
+  }
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color current"></div>
+      <span>現在検討中</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color used"></div>
+      <span>使用された硬貨</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color processed"></div>
+      <span>検討済み</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color silver"></div>
+      <span>500/100/50円硬貨</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color bronze"></div>
+      <span>10/5/1円硬貨</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,106 @@
+<div class="knapsack-visualization">
+  <div class="problem-info">
+    <div class="capacity-info">
+      <h4>🎒 ナップサック容量: {{ capacity }}</h4>
+      <div class="result-summary">{{ getResultText() }}</div>
+      @if (isComplete) {
+        <div class="efficiency">
+          <div class="efficiency-bar">
+            <div class="efficiency-fill" [style.width.%]="getEfficiencyPercentage()"></div>
+          </div>
+          <span>容量使用率: {{ getEfficiencyPercentage() }}%</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="main-content">
+    <!-- アイテムリスト -->
+    <div class="items-section">
+      <h4>📦 アイテム一覧</h4>
+      <div class="items-grid">
+        @for (item of items; track item.id) {
+          <div class="item-card" [class]="getItemClass(item.id)">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-stats">
+              <span class="weight">重量: {{ item.weight }}</span>
+              <span class="value">価値: {{ item.value }}</span>
+              <span class="efficiency">効率: {{ item.valuePerWeight }}</span>
+            </div>
+            @if (selectedItems.has(item.id)) {
+              <div class="selected-badge">✅ 選択</div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- DPテーブル -->
+    <div class="dp-table-section">
+      <h4>🧮 動的プログラミングテーブル</h4>
+      <div class="table-container">
+        <table class="dp-table">
+          <thead>
+            <tr>
+              <th class="item-header">アイテム \ 容量</th>
+              @for (w of [].constructor(capacity + 1); track $index) {
+                <th class="capacity-header">{{ $index }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of dpTable; track rowIndex; let rowIndex = $index) {
+              <tr>
+                <td class="row-header">
+                  @if (rowIndex === 0) {
+                    なし
+                  } @else {
+                    {{ items[rowIndex - 1].name }} ({{ items[rowIndex - 1].weight }}/{{ items[rowIndex - 1].value }})
+                  }
+                </td>
+                @for (cell of row; track colIndex; let colIndex = $index) {
+                  <td 
+                    [class]="getDPCellClass(rowIndex, colIndex)"
+                    [attr.data-row]="rowIndex"
+                    [attr.data-col]="colIndex">
+                    {{ cell }}
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (currentRow >= 0 && currentCol >= 0) {
+        <div class="current-calculation">
+          <strong>現在の計算:</strong>
+          @if (currentRow === 0) {
+            初期化中...
+          } @else {
+            {{ items[currentRow - 1].name }} (容量{{ currentCol }})
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color current"></div>
+      <span>現在計算中</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color computed"></div>
+      <span>計算完了</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color solution"></div>
+      <span>最適解の経路</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color selected"></div>
+      <span>選択されたアイテム</span>
+    </div>
+  </div>
+</div>

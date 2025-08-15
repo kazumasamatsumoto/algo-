@@ -1,0 +1,382 @@
+.kruskal-visualization {
+  width: 100%;
+  padding: 1rem;
+}
+
+.problem-info {
+  background: #f7fafc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 2px solid #e2e8f0;
+  text-align: center;
+}
+
+.problem-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: #2d3748;
+  font-size: 1.3rem;
+}
+
+.result-summary {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #4a5568;
+}
+
+.current-step {
+  background: #fef5e7;
+  border: 2px solid #f6ad55;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #744210;
+  font-size: 1rem;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* グラフセクション */
+.graph-section {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.graph-section h4 {
+  margin: 0 0 1rem 0;
+  color: #2d3748;
+}
+
+.graph-svg {
+  background: #f8f9ff;
+  border-radius: 8px;
+  border: 1px solid #e0e8ff;
+}
+
+.graph-edge {
+  stroke: #a0aec0;
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+
+.graph-edge.mst-edge {
+  stroke: #48bb78;
+  stroke-width: 4;
+  animation: mstGlow 2s ease-in-out infinite alternate;
+}
+
+.graph-edge.rejected-edge {
+  stroke: #e53e3e;
+  stroke-width: 2;
+  stroke-dasharray: 5,5;
+  opacity: 0.6;
+}
+
+.graph-edge.current-edge {
+  stroke: #ed8936;
+  stroke-width: 4;
+  animation: currentPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes mstGlow {
+  from { stroke: #48bb78; }
+  to { stroke: #38a169; }
+}
+
+@keyframes currentPulse {
+  from { stroke-width: 4; }
+  to { stroke-width: 6; }
+}
+
+.edge-weight {
+  fill: #4a5568;
+  font-size: 11px;
+  font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  background: white;
+  padding: 2px;
+}
+
+.edge-weight.mst-weight {
+  fill: #22543d;
+  font-size: 12px;
+}
+
+.edge-weight.current-weight {
+  fill: #dd6b20;
+  font-size: 12px;
+  animation: weightBounce 1s ease-in-out infinite alternate;
+}
+
+@keyframes weightBounce {
+  from { font-size: 12px; }
+  to { font-size: 14px; }
+}
+
+.node {
+  transition: all 0.3s ease;
+}
+
+.node circle {
+  fill: #667eea;
+  stroke: #553c9a;
+  stroke-width: 2;
+}
+
+.node circle.connected {
+  fill: #48bb78;
+  stroke: #38a169;
+  stroke-width: 3;
+}
+
+.node-id {
+  fill: white;
+  font-size: 12px;
+  font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+/* エッジセクション */
+.edges-section {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+}
+
+.edges-section h4 {
+  margin: 0 0 1rem 0;
+  color: #2d3748;
+}
+
+.edges-container {
+  max-height: 350px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edge-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f8f9ff;
+  border: 2px solid #e0e8ff;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.edge-item.current {
+  background: #fef5e7;
+  border-color: #f6ad55;
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(246, 173, 85, 0.3);
+}
+
+.edge-item.mst {
+  background: #c6f6d5;
+  border-color: #48bb78;
+  transform: scale(1.01);
+}
+
+.edge-item.rejected {
+  background: #fed7d7;
+  border-color: #e53e3e;
+  opacity: 0.8;
+}
+
+.edge-item.processed {
+  background: #f1f5f9;
+  border-color: #cbd5e0;
+  opacity: 0.7;
+}
+
+.edge-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.edge-nodes {
+  font-weight: bold;
+  color: #2d3748;
+  font-size: 0.9rem;
+  font-family: monospace;
+}
+
+.edge-weight-text {
+  font-size: 0.8rem;
+  color: #4a5568;
+}
+
+.edge-status {
+  display: flex;
+  align-items: center;
+}
+
+.edge-status span {
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-current {
+  background: #f6ad55;
+  color: white;
+  animation: statusPulse 1.5s ease-in-out infinite;
+}
+
+.status-mst {
+  background: #48bb78;
+  color: white;
+}
+
+.status-rejected {
+  background: #e53e3e;
+  color: white;
+}
+
+.status-processed {
+  background: #cbd5e0;
+  color: #4a5568;
+}
+
+.status-pending {
+  background: #e2e8f0;
+  color: #718096;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* 結果セクション */
+.result-section {
+  background: #f0fff4;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid #9ae6b4;
+  margin-bottom: 1.5rem;
+}
+
+.result-section h4 {
+  margin: 0 0 1rem 0;
+  color: #22543d;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat-item {
+  background: white;
+  padding: 0.75rem;
+  border-radius: 6px;
+  text-align: center;
+  border: 1px solid #9ae6b4;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #22543d;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #22543d;
+}
+
+.success-message {
+  background: #48bb78;
+  color: white;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #4a5568;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid #cbd5e0;
+}
+
+.legend-color.current {
+  background: #f6ad55;
+}
+
+.legend-color.mst {
+  background: #48bb78;
+}
+
+.legend-color.rejected {
+  background: #e53e3e;
+}
+
+.legend-color.processed {
+  background: #cbd5e0;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 1024px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .graph-svg {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .legend {
+    gap: 1rem;
+  }
+}

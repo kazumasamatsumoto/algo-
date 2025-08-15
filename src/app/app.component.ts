@@ -28,6 +28,14 @@ import { BinarySearchComponent } from './components/search/binary-search/binary-
 
 // Dynamic Programming Components
 import { FibonacciComponent } from './components/dynamic/fibonacci/fibonacci.component';
+import { KnapsackComponent } from './components/dynamic/knapsack/knapsack.component';
+import { LcsComponent } from './components/dynamic/lcs/lcs.component';
+
+// Greedy Components
+import { CoinChangeComponent } from './components/greedy/coin-change/coin-change.component';
+
+// Additional Graph Components
+import { KruskalComponent } from './components/graph/kruskal/kruskal.component';
 
 @Component({
   selector: 'app-root',
@@ -66,9 +74,11 @@ export class App implements OnInit, OnDestroy {
   
   searchAlgorithms: AlgorithmType[] = ['linear-search', 'binary-search'];
   
-  graphAlgorithms: AlgorithmType[] = ['dijkstra', 'dfs', 'bfs'];
+  graphAlgorithms: AlgorithmType[] = ['dijkstra', 'dfs', 'bfs', 'kruskal'];
   
-  dynamicProgramming: AlgorithmType[] = ['fibonacci'];
+  dynamicProgramming: AlgorithmType[] = ['fibonacci', 'knapsack', 'lcs'];
+  
+  greedyAlgorithms: AlgorithmType[] = ['coin-change'];
 
   // コンポーネントマッピング
   private componentMap = new Map<string, any>([
@@ -83,7 +93,11 @@ export class App implements OnInit, OnDestroy {
     ['bfs', BfsComponent],
     ['linear-search', LinearSearchComponent],
     ['binary-search', BinarySearchComponent],
-    ['fibonacci', FibonacciComponent]
+    ['fibonacci', FibonacciComponent],
+    ['knapsack', KnapsackComponent],
+    ['lcs', LcsComponent],
+    ['coin-change', CoinChangeComponent],
+    ['kruskal', KruskalComponent]
   ]);
 
   constructor(
@@ -218,6 +232,7 @@ export class App implements OnInit, OnDestroy {
     if (algorithms === this.searchAlgorithms) return '探索アルゴリズム';
     if (algorithms === this.graphAlgorithms) return 'グラフアルゴリズム';
     if (algorithms === this.dynamicProgramming) return '動的プログラミング';
+    if (algorithms === this.greedyAlgorithms) return '貪欲法';
     return '';
   }
 
