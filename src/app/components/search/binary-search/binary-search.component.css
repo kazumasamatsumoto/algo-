@@ -203,3 +203,99 @@
 .legend-color.right-bound {
   background: #fbb6ce;
 }
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .search-visualization {
+    padding: 0.5rem;
+  }
+  
+  .search-info {
+    padding: 0.75rem;
+  }
+  
+  .array-container {
+    padding: 0.75rem;
+    overflow-x: auto;
+    gap: 3px;
+  }
+  
+  .array-item {
+    min-width: 50px;
+    padding: 6px;
+  }
+  
+  .item-value {
+    font-size: 12px;
+  }
+  
+  .item-index {
+    font-size: 9px;
+  }
+  
+  .legend {
+    gap: 0.75rem;
+  }
+  
+  .legend-item {
+    font-size: 11px;
+  }
+  
+  .bound-label {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-visualization {
+    padding: 0.25rem;
+  }
+  
+  .search-info {
+    padding: 0.5rem;
+  }
+  
+  .array-container {
+    padding: 0.5rem;
+    gap: 2px;
+  }
+  
+  .array-item {
+    min-width: 45px;
+    padding: 5px;
+  }
+  
+  .item-value {
+    font-size: 11px;
+  }
+  
+  .item-index {
+    font-size: 8px;
+  }
+  
+  .target-info {
+    font-size: 16px;
+  }
+  
+  .range-info {
+    font-size: 12px;
+  }
+  
+  .result-message {
+    font-size: 14px;
+  }
+  
+  .legend {
+    gap: 0.5rem;
+  }
+  
+  .legend-item {
+    font-size: 10px;
+  }
+  
+  .bound-label {
+    font-size: 8px;
+    padding: 1px 3px;
+  }
+}

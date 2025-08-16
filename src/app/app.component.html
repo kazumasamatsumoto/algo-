@@ -1,12 +1,24 @@
 <div class="algorithm-explorer">
   <header class="app-header">
-    <h1>🔍 Algorithm Explorer</h1>
-    <p>Angularで学ぶアルゴリズム可視化</p>
+    <div class="header-content">
+      <div class="header-left">
+        <h1>🔍 Algorithm Explorer</h1>
+        <p>Angularで学ぶアルゴリズム可視化</p>
+      </div>
+      <button class="mobile-menu-btn" (click)="toggleMobileMenu()" [class.active]="isMobileMenuOpen">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
   </header>
+
+  <!-- モバイル用オーバーレイ -->
+  <div class="mobile-overlay" [class.active]="isMobileMenuOpen" (click)="toggleMobileMenu()"></div>
 
   <div class="main-layout">
     <!-- サイドバー: アルゴリズム選択 -->
-    <aside class="sidebar">
+    <aside class="sidebar" [class.mobile-open]="isMobileMenuOpen">
       <div class="settings-panel">
         <h3>設定</h3>
         
@@ -25,9 +37,9 @@
           <label>実行速度: {{ settings.speed }}ms</label>
           <input 
             type="range" 
-            min="50" 
-            max="1000" 
-            step="50"
+            min="5" 
+            max="200" 
+            step="5"
             [value]="settings.speed"
             (input)="updateSpeed(+($any($event.target)).value)"
             class="slider">
@@ -57,7 +69,7 @@
                 class="algorithm-btn"
                 [class.selected]="selectedAlgorithm === algorithm"
                 [disabled]="isRunning"
-                (click)="selectAlgorithm(algorithm)">
+                (click)="selectAlgorithmAndCloseMobileMenu(algorithm)">
                 <div class="algorithm-name">
                   {{ getAlgorithmInfo(algorithm)?.name || algorithm }}
                 </div>
@@ -73,6 +85,11 @@
 
     <!-- メインコンテンツ -->
     <main class="main-content">
+      <!-- アルゴリズム可視化エリア（常に存在） -->
+      <div class="visualization-container" [style.display]="selectedAlgorithm ? 'block' : 'none'">
+        <div #algorithmContainer></div>
+      </div>
+      
       @if (selectedAlgorithm) {
         <div class="algorithm-header">
           <div class="algorithm-title">
@@ -140,10 +157,6 @@
           </div>
         </div>
 
-        <!-- アルゴリズム可視化エリア -->
-        <div class="visualization-container">
-          <ng-container #algorithmContainer></ng-container>
-        </div>
       } @else {
         <div class="welcome-message">
           <h2>🎯 アルゴリズムを選択してください</h2>

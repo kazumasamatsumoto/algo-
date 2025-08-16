@@ -94,3 +94,60 @@
   dominant-baseline: middle;
   pointer-events: none;
 }
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .graph-visualization {
+    padding: 0.5rem;
+  }
+  
+  .visit-order {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .graph-svg {
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    overflow-x: auto;
+  }
+  
+  .node-id {
+    font-size: 12px;
+  }
+  
+  .visit-number {
+    font-size: 9px;
+  }
+  
+  .stack-info {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .graph-visualization {
+    padding: 0.25rem;
+  }
+  
+  .visit-order {
+    padding: 0.5rem;
+  }
+  
+  .graph-svg {
+    max-width: 280px;
+  }
+  
+  .node-id {
+    font-size: 10px;
+  }
+  
+  .visit-number {
+    font-size: 8px;
+  }
+  
+  .stack-info {
+    font-size: 11px;
+  }
+}

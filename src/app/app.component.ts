@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ViewContainerRef, ComponentRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ViewContainerRef, ComponentRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -49,14 +49,15 @@ import { SieveOfEratosthenesComponent } from './components/numerical/sieve-of-er
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class App implements OnInit, OnDestroy {
-  @ViewChild('algorithmContainer', { read: ViewContainerRef }) algorithmContainer!: ViewContainerRef;
+export class App implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('algorithmContainer', { read: ViewContainerRef, static: false }) algorithmContainer!: ViewContainerRef;
   
   private destroy$ = new Subject<void>();
   private currentComponentRef: ComponentRef<any> | null = null;
 
   selectedAlgorithm: AlgorithmType | null = null;
   isRunning: boolean = false;
+  isMobileMenuOpen: boolean = false;
   stats: ExecutionStats = {
     steps: 0,
     swaps: 0,
@@ -66,7 +67,7 @@ export class App implements OnInit, OnDestroy {
   
   settings: AlgorithmSettings = {
     arraySize: 20,
-    speed: 300,
+    speed: 33,
     dataType: 'random',
     showStepCount: true,
     graphType: 'sparse'
@@ -126,6 +127,15 @@ export class App implements OnInit, OnDestroy {
       });
   }
 
+  ngAfterViewInit(): void {
+    // ViewContainerRef が初期化されたことを確認
+    if (this.algorithmContainer) {
+      console.log('Algorithm container initialized successfully');
+    } else {
+      console.error('Algorithm container ViewChild not initialized');
+    }
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -139,7 +149,19 @@ export class App implements OnInit, OnDestroy {
     
     this.selectedAlgorithm = algorithmType;
     this.resetStats();
-    this.loadAlgorithmComponent(algorithmType);
+    
+    // ViewContainerRef の初期化を確認
+    if (this.algorithmContainer) {
+      this.loadAlgorithmComponent(algorithmType);
+    } else {
+      console.warn('Algorithm container not ready, deferring component load');
+      // ViewInit後に再試行
+      setTimeout(() => {
+        if (this.algorithmContainer) {
+          this.loadAlgorithmComponent(algorithmType);
+        }
+      }, 0);
+    }
   }
 
   private loadAlgorithmComponent(algorithmType: AlgorithmType): void {
@@ -151,8 +173,18 @@ export class App implements OnInit, OnDestroy {
       return;
     }
 
-    this.currentComponentRef = this.algorithmContainer.createComponent(componentClass);
-    this.setupComponent(this.currentComponentRef.instance, algorithmType);
+    if (!this.algorithmContainer) {
+      console.error('Algorithm container not initialized');
+      return;
+    }
+
+    try {
+      this.currentComponentRef = this.algorithmContainer.createComponent(componentClass);
+      this.setupComponent(this.currentComponentRef.instance, algorithmType);
+    } catch (error) {
+      console.error(`Error creating component for ${algorithmType}:`, error);
+      this.currentComponentRef = null;
+    }
   }
 
   private setupComponent(component: AlgorithmComponent, algorithmType: AlgorithmType): void {
@@ -250,5 +282,14 @@ export class App implements OnInit, OnDestroy {
   formatTime(ms: number): string {
     if (ms < 1000) return `${ms}ms`;
     return `${(ms / 1000).toFixed(2)}s`;
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  selectAlgorithmAndCloseMobileMenu(algorithmType: AlgorithmType): void {
+    this.selectAlgorithm(algorithmType);
+    this.isMobileMenuOpen = false;
   }
 }

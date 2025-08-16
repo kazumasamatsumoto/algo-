@@ -101,3 +101,51 @@
   dominant-baseline: middle;
   pointer-events: none;
 }
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .graph-visualization {
+    padding: 0.5rem;
+  }
+  
+  .graph-svg {
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    overflow-x: auto;
+  }
+  
+  .node-id {
+    font-size: 12px;
+  }
+  
+  .node-distance {
+    font-size: 9px;
+  }
+  
+  .edge-weight {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .graph-visualization {
+    padding: 0.25rem;
+  }
+  
+  .graph-svg {
+    max-width: 280px;
+  }
+  
+  .node-id {
+    font-size: 10px;
+  }
+  
+  .node-distance {
+    font-size: 8px;
+  }
+  
+  .edge-weight {
+    font-size: 9px;
+  }
+}

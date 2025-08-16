@@ -29,7 +29,8 @@ export class DijkstraComponent extends BaseAlgorithmComponent implements OnInit 
   }
 
   reset(): void {
-    this.graph = this.dataGenerator.generateGraph();
+    const graphType = this.settings?.graphType || 'sparse';
+    this.graph = this.dataGenerator.generateGraph(graphType);
     this.distances = new Map();
     this.visited = new Set();
     this.currentNode = -1;
@@ -39,6 +40,11 @@ export class DijkstraComponent extends BaseAlgorithmComponent implements OnInit 
 
   async run(): Promise<void> {
     if (this.isRunning) return;
+    
+    if (!this.graph || !this.graph.nodes || this.graph.nodes.length === 0) {
+      console.error('Graph not initialized');
+      return;
+    }
 
     this.startExecution();
     await this.dijkstra();
@@ -46,6 +52,9 @@ export class DijkstraComponent extends BaseAlgorithmComponent implements OnInit 
   }
 
   private async dijkstra(): Promise<void> {
+    // 設定が初期化されていない場合のデフォルト値
+    const speed = this.settings?.speed || 100;
+    
     // 距離を初期化
     for (const node of this.graph.nodes) {
       this.distances.set(node.id, node.id === this.startNode ? 0 : Infinity);
@@ -72,7 +81,7 @@ export class DijkstraComponent extends BaseAlgorithmComponent implements OnInit 
       unvisited.delete(minNode);
       this.visited.add(minNode);
       this.incrementStep();
-      await this.delay(this.settings.speed);
+      await this.delay(speed);
 
       if (!this.isRunning) break;
 
@@ -94,11 +103,11 @@ export class DijkstraComponent extends BaseAlgorithmComponent implements OnInit 
           const currentNeighborDistance = this.distances.get(neighborId) || Infinity;
 
           this.incrementComparison();
-          await this.delay(this.settings.speed);
+          await this.delay(speed);
 
           if (newDistance < currentNeighborDistance) {
             this.distances.set(neighborId, newDistance);
-            await this.delay(this.settings.speed);
+            await this.delay(speed);
           }
         }
       }
@@ -115,6 +124,9 @@ export class DijkstraComponent extends BaseAlgorithmComponent implements OnInit 
   }
 
   private async constructPath(): Promise<void> {
+    // 設定が初期化されていない場合のデフォルト値
+    const speed = this.settings?.speed || 100;
+    
     // 最短パスを構築
     const path: number[] = [];
     let current = this.endNode;
@@ -150,7 +162,7 @@ export class DijkstraComponent extends BaseAlgorithmComponent implements OnInit 
     if (this.isRunning) {
       path.unshift(this.startNode);
       this.pathNodes = new Set(path);
-      await this.delay(this.settings.speed);
+      await this.delay(speed);
     }
   }
 
@@ -160,22 +172,22 @@ export class DijkstraComponent extends BaseAlgorithmComponent implements OnInit 
   }
 
   getEdgeMidX(edge: any): number {
-    const fromNode = this.graph.nodes.find(n => n.id === edge.from);
-    const toNode = this.graph.nodes.find(n => n.id === edge.to);
+    const fromNode = this.graph?.nodes?.find(n => n.id === edge.from);
+    const toNode = this.graph?.nodes?.find(n => n.id === edge.to);
     return ((fromNode?.x || 0) + (toNode?.x || 0)) / 2;
   }
 
   getEdgeMidY(edge: any): number {
-    const fromNode = this.graph.nodes.find(n => n.id === edge.from);
-    const toNode = this.graph.nodes.find(n => n.id === edge.to);
+    const fromNode = this.graph?.nodes?.find(n => n.id === edge.from);
+    const toNode = this.graph?.nodes?.find(n => n.id === edge.to);
     return ((fromNode?.y || 0) + (toNode?.y || 0)) / 2;
   }
 
   getNodeX(nodeId: number): number {
-    return this.graph.nodes.find(n => n.id === nodeId)?.x || 0;
+    return this.graph?.nodes?.find(n => n.id === nodeId)?.x || 0;
   }
 
   getNodeY(nodeId: number): number {
-    return this.graph.nodes.find(n => n.id === nodeId)?.y || 0;
+    return this.graph?.nodes?.find(n => n.id === nodeId)?.y || 0;
   }
 }

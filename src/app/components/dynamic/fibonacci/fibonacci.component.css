@@ -155,3 +155,92 @@
 .legend-color.computed {
   background: #667eea;
 }
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .fibonacci-visualization {
+    padding: 0.5rem;
+  }
+  
+  .info-panel {
+    padding: 0.75rem;
+  }
+  
+  .grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 6px;
+    max-width: 100%;
+  }
+  
+  .fib-cell {
+    min-height: 50px;
+    padding: 6px;
+  }
+  
+  .cell-index {
+    font-size: 10px;
+  }
+  
+  .cell-value {
+    font-size: 12px;
+  }
+  
+  .sequence {
+    font-size: 14px;
+    overflow-x: auto;
+  }
+  
+  .memo-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .legend {
+    gap: 0.75rem;
+  }
+  
+  .legend-item {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fibonacci-visualization {
+    padding: 0.25rem;
+  }
+  
+  .info-panel {
+    padding: 0.5rem;
+  }
+  
+  .grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 4px;
+  }
+  
+  .fib-cell {
+    min-height: 45px;
+    padding: 4px;
+  }
+  
+  .cell-index {
+    font-size: 9px;
+  }
+  
+  .cell-value {
+    font-size: 11px;
+  }
+  
+  .sequence {
+    font-size: 12px;
+    padding: 0.4rem;
+  }
+  
+  .legend {
+    gap: 0.5rem;
+  }
+  
+  .legend-item {
+    font-size: 11px;
+  }
+}

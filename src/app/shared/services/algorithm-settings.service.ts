@@ -8,7 +8,7 @@ import { AlgorithmSettings } from '../interfaces/algorithm.interface';
 export class AlgorithmSettingsService {
   private defaultSettings: AlgorithmSettings = {
     arraySize: 20,
-    speed: 300,
+    speed: 33,
     dataType: 'random',
     showStepCount: true,
     graphType: 'sparse'
@@ -29,7 +29,7 @@ export class AlgorithmSettingsService {
 
   updateSpeed(speed: number): void {
     const settings = { ...this.currentSettings };
-    settings.speed = Math.max(50, Math.min(2000, speed));
+    settings.speed = Math.max(5, Math.min(200, speed));
     this.settingsSubject.next(settings);
   }
 
